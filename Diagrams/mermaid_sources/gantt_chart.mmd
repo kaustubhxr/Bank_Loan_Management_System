@@ -1,0 +1,40 @@
+gantt
+    title Bank Loan Management System - Project Schedule
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+
+    section Planning
+    Project Initiation           :p1, 2024-01-01, 7d
+    Requirement Gathering        :p2, after p1, 14d
+    Feasibility Study            :p3, after p1, 10d
+
+    section Analysis
+    Requirement Analysis         :a1, after p2, 14d
+    SRS Document Preparation     :a2, after a1, 10d
+    Use Case Modeling            :a3, after a1, 7d
+
+    section Design
+    System Design                :d1, after a2, 14d
+    Database Design              :d2, after a2, 10d
+    UI/UX Design                 :d3, after d1, 10d
+    Architecture Design          :d4, after d1, 7d
+
+    section Development
+    Frontend Development         :dev1, after d3, 30d
+    Backend Development          :dev2, after d4, 35d
+    Database Implementation      :dev3, after d2, 14d
+    API Development              :dev4, after dev2, 14d
+    Integration                  :dev5, after dev4, 10d
+
+    section Testing
+    Unit Testing                 :t1, after dev2, 14d
+    Integration Testing          :t2, after dev5, 10d
+    System Testing               :t3, after t2, 7d
+    User Acceptance Testing      :t4, after t3, 7d
+    Bug Fixing                   :t5, after t3, 10d
+
+    section Deployment
+    Deployment Preparation       :dep1, after t4, 5d
+    Production Deployment        :dep2, after dep1, 3d
+    Post-Deployment Support      :dep3, after dep2, 10d
+    Documentation                :dep4, after dep2, 7d

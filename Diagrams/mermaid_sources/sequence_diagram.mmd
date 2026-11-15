@@ -1,0 +1,61 @@
+sequenceDiagram
+    actor Customer
+    participant LoanAppSystem as Loan Application System
+    participant DocVerSystem as Document Verification System
+    actor BankEmployee as Bank Employee
+    participant LoanDB as Loan Database
+
+    Customer->>+LoanAppSystem: 1. Register / Login
+    LoanAppSystem->>+LoanDB: Validate Credentials
+    LoanDB-->>-LoanAppSystem: Authentication Result
+    LoanAppSystem-->>-Customer: Login Success / Failure
+
+    Customer->>+LoanAppSystem: 2. Select Loan Category
+    LoanAppSystem->>+LoanDB: Fetch Categories
+    LoanDB-->>-LoanAppSystem: Category List
+    LoanAppSystem-->>-Customer: Display Categories
+
+    Customer->>+LoanAppSystem: 3. Submit Loan Application
+    LoanAppSystem->>+LoanDB: Store Application
+    LoanDB-->>-LoanAppSystem: Application ID Generated
+    LoanAppSystem-->>-Customer: Application ID Confirmation
+
+    loop Document Upload and Verification
+        Customer->>+LoanAppSystem: 4. Upload Documents
+        LoanAppSystem->>+DocVerSystem: Forward Documents
+        DocVerSystem->>+BankEmployee: Notify for Verification
+        BankEmployee->>DocVerSystem: Verify Documents
+        DocVerSystem-->>-LoanAppSystem: Verification Result
+        LoanAppSystem-->>-Customer: Verification Status
+
+        alt Documents Invalid
+            LoanAppSystem-->>Customer: Request Re-upload
+        end
+    end
+
+    BankEmployee->>+LoanAppSystem: 5. Assess Eligibility
+    LoanAppSystem->>+LoanDB: Fetch Customer and Application Data
+    LoanDB-->>-LoanAppSystem: Customer and Application Details
+    LoanAppSystem-->>-BankEmployee: Eligibility Report
+
+    alt Loan Approved
+        BankEmployee->>+LoanAppSystem: 6a. Approve Loan
+        LoanAppSystem->>+LoanDB: Update Status to Approved
+        LoanDB-->>-LoanAppSystem: Status Updated
+        LoanAppSystem->>LoanAppSystem: Calculate EMI Schedule
+        LoanAppSystem->>+LoanDB: Store Loan and EMI Details
+        LoanDB-->>-LoanAppSystem: Loan Record Created
+        LoanAppSystem-->>-Customer: Approval Notification with EMI Schedule
+    else Loan Rejected
+        BankEmployee->>+LoanAppSystem: 6b. Reject Loan
+        LoanAppSystem->>+LoanDB: Update Status to Rejected
+        LoanDB-->>-LoanAppSystem: Status Updated
+        LoanAppSystem-->>-Customer: Rejection Notification with Reason
+    end
+
+    loop Monthly Repayment
+        Customer->>+LoanAppSystem: 7. Make EMI Payment
+        LoanAppSystem->>+LoanDB: Record Payment
+        LoanDB-->>-LoanAppSystem: Payment Confirmed
+        LoanAppSystem-->>-Customer: Payment Receipt
+    end

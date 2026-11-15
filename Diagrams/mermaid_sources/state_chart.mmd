@@ -1,0 +1,28 @@
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Submitted : submitApplication()
+    Submitted --> UnderVerification : assignForVerification()
+    UnderVerification --> EligibilityAssessment : documentsValid
+    UnderVerification --> Submitted : documentsInvalid / requestReupload
+    EligibilityAssessment --> Approved : eligible
+    EligibilityAssessment --> Rejected : notEligible
+    Approved --> ActiveLoan : loanDisbursed()
+    ActiveLoan --> Closed : repaymentCompleted()
+    Rejected --> [*]
+    Closed --> [*]
+
+    state UnderVerification {
+        [*] --> DocumentReview
+        DocumentReview --> VerifyingIdentity
+        VerifyingIdentity --> VerifyingIncome
+        VerifyingIncome --> VerificationComplete
+        VerificationComplete --> [*]
+    }
+
+    state EligibilityAssessment {
+        [*] --> CheckCreditScore
+        CheckCreditScore --> CheckIncomeRatio
+        CheckIncomeRatio --> CheckCollateral
+        CheckCollateral --> EligibilityDecision
+        EligibilityDecision --> [*]
+    }

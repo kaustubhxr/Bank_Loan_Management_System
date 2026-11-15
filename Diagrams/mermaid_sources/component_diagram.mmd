@@ -1,0 +1,50 @@
+flowchart TD
+    subgraph ClientTier["Client Tier"]
+        UI["Web Browser UI"]
+    end
+
+    subgraph ApplicationTier["Application Tier"]
+        Auth["Authentication Module"]
+        LoanApp["Loan Application Module"]
+        DocMgmt["Document Management Module"]
+        Verify["Verification Module"]
+        Approval["Approval Module"]
+        EMICalc["EMI Calculation Module"]
+        Payment["Payment Processing Module"]
+        Reports["Report Generation Module"]
+        Notify["Notification Service"]
+    end
+
+    subgraph DataTier["Data Tier"]
+        DBLayer["Database Layer"]
+    end
+
+    UI -->|"HTTP Requests"| Auth
+    UI -->|"Loan Requests"| LoanApp
+    UI -->|"Document Uploads"| DocMgmt
+
+    Auth -->|"User Session"| LoanApp
+    Auth -->|"User Session"| DocMgmt
+    Auth -->|"User Session"| Reports
+
+    LoanApp -->|"Application Data"| Verify
+    LoanApp -->|"Application Data"| Approval
+    LoanApp -->|"Loan Details"| EMICalc
+
+    DocMgmt -->|"Documents"| Verify
+
+    Verify -->|"Verification Result"| Approval
+    Approval -->|"Approved Loan"| EMICalc
+    Approval -->|"Decision"| Notify
+
+    EMICalc -->|"EMI Schedule"| Payment
+    Payment -->|"Payment Status"| Notify
+
+    Auth -->|"Read/Write"| DBLayer
+    LoanApp -->|"Read/Write"| DBLayer
+    DocMgmt -->|"Read/Write"| DBLayer
+    Verify -->|"Read/Write"| DBLayer
+    Approval -->|"Read/Write"| DBLayer
+    EMICalc -->|"Read/Write"| DBLayer
+    Payment -->|"Read/Write"| DBLayer
+    Reports -->|"Read"| DBLayer

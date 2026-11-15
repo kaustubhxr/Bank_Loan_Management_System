@@ -1,0 +1,32 @@
+flowchart TD
+    Root["Bank Loan Management System"]
+
+    Root --> UM["User Management"]
+    Root --> LM["Loan Management"]
+    Root --> VM["Verification Module"]
+    Root --> AM["Approval Module"]
+    Root --> EM["EMI Management"]
+    Root --> AD["Administration"]
+
+    UM --> UM1["Registration"]
+    UM --> UM2["Login"]
+    UM --> UM3["Profile Management"]
+
+    LM --> LM1["Loan Application"]
+    LM --> LM2["Category Selection"]
+    LM --> LM3["Document Upload"]
+
+    VM --> VM1["Document Check"]
+    VM --> VM2["Eligibility Assessment"]
+
+    AM --> AM1["Application Review"]
+    AM --> AM2["Approve Loan"]
+    AM --> AM3["Reject Loan"]
+
+    EM --> EM1["Calculate EMI"]
+    EM --> EM2["Track Payments"]
+    EM --> EM3["Generate Schedule"]
+
+    AD --> AD1["Manage Users"]
+    AD --> AD2["Manage Categories"]
+    AD --> AD3["Generate Reports"]

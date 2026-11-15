@@ -1,0 +1,86 @@
+\chapter{Software Project Management}
+
+\section{Software Development Life Cycle (SDLC) Methodology}
+
+Selecting an appropriate Software Development Life Cycle (SDLC) model is a critical managerial decision that governs process rigor, milestone verification, and risk exposure. For the \textbf{Bank Loan Management System}, the \textbf{Classical Waterfall Model with Formal Stage-Gate Verification} is selected as the primary lifecycle methodology.
+
+\subsection{Justification for the Waterfall Model}
+
+\begin{enumerate}
+  \item \textbf{Well-Understood, Deterministic Requirements:} In commercial banking, loan approval procedures, credit appraisal criteria, and repayment accounting are governed by established legal, statutory, and institutional banking policies. Requirements are stable, deterministic, and not subject to frequent volatile shifts.
+  \item \textbf{High Demand for Strict Documentation:} Financial software requires comprehensive auditability. The linear stage-gate nature of the Waterfall model mandates complete, formal documentation (SRS, System Architecture, Relational Data Dictionaries, Test Suites) prior to phase advancement.
+  \item \textbf{Sequential Logical Dependencies:} In banking architecture, low-level database schemas and security mechanisms cannot be reliably formulated until high-level functional requirements and regulatory boundaries are fully baselined.
+  \item \textbf{Academic Project Alignment:} The university curriculum (CIC-357) mandates a rigorous phase-wise progression through requirement engineering, structured analysis, object-oriented design, testing, and estimation, which maps directly to the Waterfall lifecycle.
+\end{enumerate}
+
+\section{Risk Analysis and Management}
+
+Software risk management involves the proactive identification, qualitative assessment, and mitigation planning for potential threats that could derail project delivery, compromise data security, or impair functional quality.
+
+\subsection{Table 8.1: Risk Assessment and Mitigation Matrix}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l l l}
+\toprule
+\textbf{Risk ID} & \textbf{Risk Category} & \textbf{Risk Description} & \textbf{Probability (1-5)} & \textbf{Impact (1-5)} & \textbf{Risk Exposure (\_\_MATH\_0\_\_)} & \textbf{Mitigation Strategy} & \textbf{Contingency Plan} \\
+\midrule
+\textbf{R-01} & Technical & Unauthorized access or sensitive financial data leakage & 2 & 5 & 10 & Enforce PBKDF2 password hashing, TLS 1.3 encryption, RBAC authorization & Immediate credential revocation; audit log forensics; customer notification \\
+\textbf{R-02} & Computational & Errors in mathematical EMI or interest accrual logic & 2 & 5 & 10 & Extensive unit testing; automated mathematical cross-validation against financial tables & Rollback ledger transaction; manual audit recalculation \\
+\textbf{R-03} & Data Integrity & Database inconsistency during concurrent loan updates & 3 & 4 & 12 & Implement strict ACID transactions, row-level pessimistic locking, 3NF schema & Database transaction rollback; automated point-in-time recovery \\
+\textbf{R-04} & Operational & Server downtime or unexpected hardware crash & 2 & 4 & 8 & Automated daily backups; redundant storage; health check daemon & Failover to hot backup replica; cloud-hosted contingency snapshot \\
+\textbf{R-05} & Requirements & Regulatory policy shifts regarding lending rates & 3 & 3 & 9 & Decouple interest rates into dynamic database configuration tables & Administrative UI update of rates without recompiling software \\
+\textbf{R-06} & Usability & Excessive complexity causing user submission errors & 3 & 3 & 9 & Multi-step intuitive wizard; inline format validation; comprehensive help tooltips & Customer support intervention; application draft recovery mode \\
+\textbf{R-07} & Security & Upload of malicious payloads disguised as KYC documents & 3 & 4 & 12 & Strict MIME-type validation; file size caps (10 MB); file scanning & Isolate storage in quarantined sandbox; discard malicious files \\
+\textbf{R-08} & Schedule & Schedule slippage due to extensive diagramming & 3 & 3 & 9 & Continuous tracking using PERT/CPM; 21-day project buffer allocation & Reallocate non-critical path floats to support critical deliverables \\
+\textbf{R-09} & Quality & Inadequate test coverage overlooking edge cases & 2 & 4 & 8 & Formulate 22+ structured test cases covering EP and BVA boundary conditions & Execute secondary peer code review and regression verification \\
+\textbf{R-10} & Technical & Browser incompatibility on legacy client machines & 2 & 2 & 4 & Comply with standard W3C HTML5/CSS3 rules; cross-browser polyfills & Graceful degradation to simplified standard web forms \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Software Quality Assurance (SQA)}
+
+The Software Quality Assurance (SQA) plan ensures that development processes and documentation artifacts adhere strictly to institutional standards (ISO/IEC 25010 Quality Model and IEEE Standard 730 for Software Quality Assurance Plans):
+
+\begin{enumerate}
+  \item \textbf{Formal Technical Reviews (FTR):} Conducted at the conclusion of each major lifecycle phase:
+\end{enumerate}
+
+\begin{itemize}
+  \item \textit{Phase 1 Review:} Requirements Completeness and Ambiguity Inspection.
+  \item \textit{Phase 2 Review:} Architectural Coupling, Cohesion, and UML Consistency Audit.
+  \item \textit{Phase 3 Review:} Database Normalization and Schema Integrity Audit.
+  \item \textit{Phase 4 Review:} Test Case Coverage and Defect Density Review.
+\end{itemize}
+
+\begin{enumerate}
+  \item \textbf{Traceability Matrix Maintenance:} Establishes bidirectional traceability linking every user requirement (FR-001 to FR-018) to corresponding Use Cases, Class attributes, and Verification Test Cases.
+  \item \textbf{Coding \& Documentation Standards Enforcement:} Uniform naming conventions (PascalCase for classes, camelCase for methods, UPPER\_CASE for relational entities), standardized figure numbering, and explicit table labeling.
+\end{enumerate}
+
+\section{Software Maintenance Plan}
+
+Software maintenance accounts for up to 60-70\% of total lifecycle software costs. The maintenance strategy defines procedures across four standard maintenance categories:
+
+\begin{enumerate}
+  \item \textbf{Corrective Maintenance:} Addresses emergency latent defects discovered post-deployment (e.g., bug fixes for unexpected document upload format exceptions or session timeout glitches).
+  \item \textbf{Adaptive Maintenance:} Modifies system components to accommodate changes in external environments (e.g., updates to external credit bureau API specifications, modern browser security patch compatibility, or operating system upgrades).
+  \item \textbf{Perfective Maintenance:} Enhances existing functional performance and user experience based on stakeholder feedback (e.g., optimizing database query indexing to reduce dashboard loading latency from 1.5 seconds to 0.4 seconds).
+  \item \textbf{Preventive Maintenance:} Proactive code refactoring, database vacuuming, audit log archiving, and dependency library security patching to prevent future failures before they manifest.
+\end{enumerate}
+
+\section{Future Enhancements Roadmap}
+
+The modular architecture of the Bank Loan Management System establishes a flexible foundation for future enterprise enhancements:
+
+\begin{enumerate}
+  \item \textbf{Artificial Intelligence / Machine Learning Credit Risk Scoring:} Integration of machine learning underwriting models (e.g., Random Forest or Gradient Boosting classifiers) trained on historical repayment datasets to predict probability of default (PD) dynamically.
+  \item \textbf{Automated Optical Character Recognition (OCR):} Automated extraction and parsing of textual data from uploaded Aadhaar, PAN, and salary slip PDFs, auto-populating application fields and eliminating manual data entry.
+  \item \textbf{Native Mobile Banking Applications:} Development of dedicated native iOS and Android client applications utilizing secure RESTful API backends.
+  \item \textbf{Blockchain-Enabled Immutable Audit Ledgers:} Deployment of a permissioned distributed ledger (Hyperledger Fabric) to maintain tamper-proof, cryptographically signed audit logs of all loan sanction and disbursement decisions.
+  \item \textbf{Aadhaar e-Sign \& Digital Contract Execution:} Integration with government digital signature gateways allowing applicants to execute legally binding loan agreements digitally without paper submission.
+\end{enumerate}

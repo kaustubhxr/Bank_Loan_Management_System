@@ -1,0 +1,45 @@
+flowchart TD
+    subgraph Customer [Customer]
+        C1[Register / Login] --> C2[Enter Loan Details]
+        C2 --> C3[Select Category]
+        C3 --> C4[Submit Application]
+        C4 --> C5[Upload Documents]
+        C6[Receive Sanction Letter]
+        C7[Pay Monthly EMI]
+    end
+
+    subgraph BankStaff [Bank Employee]
+        E1[Verify Documents]
+        E2{Documents Valid}
+        E3[Assess Credit Risk]
+        E4{Eligible}
+        E5[Approve Application]
+        E6[Reject Application]
+    end
+
+    subgraph SystemEngine [System Engine]
+        S1[Validate Data]
+        S2[Calculate EMI Schedule]
+        S3[Update Ledger]
+        S4{All EMIs Paid}
+        S5[Issue NOC and Close Loan]
+    end
+
+    Start([Start]) --> C1
+    C5 --> S1
+    S1 --> E1
+    E1 --> E2
+    E2 -->|No| C5
+    E2 -->|Yes| E3
+    E3 --> E4
+    E4 -->|No| E6
+    E4 -->|Yes| E5
+    E5 --> S2
+    S2 --> C6
+    C6 --> C7
+    C7 --> S3
+    S3 --> S4
+    S4 -->|No| C7
+    S4 -->|Yes| S5
+    S5 --> End1([End])
+    E6 --> End2([End])

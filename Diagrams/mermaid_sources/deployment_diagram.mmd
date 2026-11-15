@@ -1,0 +1,29 @@
+flowchart TD
+    subgraph ClientDevice["Client Device"]
+        Browser["Web Browser\nChrome / Firefox / Edge"]
+    end
+
+    subgraph AppServer["Application Server"]
+        WebServer["Web Server\nApache / Nginx"]
+        AppLogic["Application Logic\nPHP / Node.js / Java"]
+        BusinessLayer["Business Layer\nLoan Processing Engine"]
+    end
+
+    subgraph DBServer["Database Server"]
+        MySQL[("MySQL Database\nPort 3306")]
+    end
+
+    subgraph DocStorage["Document Storage Server"]
+        FileStore["File Storage\nDocument Repository"]
+    end
+
+    subgraph EmailServer["Email / Notification Server"]
+        SMTP["SMTP Service\nEmail Notifications"]
+    end
+
+    Browser -->|"HTTPS Port 443"| WebServer
+    WebServer --> AppLogic
+    AppLogic --> BusinessLayer
+    BusinessLayer -->|"TCP/IP Port 3306"| MySQL
+    BusinessLayer -->|"TCP/IP File Transfer"| FileStore
+    BusinessLayer -->|"SMTP Port 587"| SMTP

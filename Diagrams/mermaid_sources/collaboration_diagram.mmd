@@ -1,0 +1,17 @@
+flowchart LR
+    Customer["Customer"]
+    LoanAppSystem["Loan Application\nSystem"]
+    DocVerSystem["Document Verification\nSystem"]
+    BankEmployee["Bank Employee"]
+    LoanDB[("Loan Database")]
+
+    Customer -->|"1: Login()"| LoanAppSystem
+    Customer -->|"2: SubmitApplication()"| LoanAppSystem
+    LoanAppSystem -->|"3: StoreApplication()"| LoanDB
+    Customer -->|"4: UploadDocuments()"| LoanAppSystem
+    LoanAppSystem -->|"5: VerifyDocuments()"| DocVerSystem
+    DocVerSystem -->|"6: VerificationResult()"| LoanAppSystem
+    DocVerSystem -->|"7: ForwardApplication()"| BankEmployee
+    BankEmployee -->|"8: ApproveOrReject()"| LoanAppSystem
+    LoanAppSystem -->|"9: UpdateStatus()"| LoanDB
+    LoanAppSystem -->|"10: NotifyDecision()"| Customer

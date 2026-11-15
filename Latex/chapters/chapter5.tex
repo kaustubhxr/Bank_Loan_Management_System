@@ -1,0 +1,115 @@
+\chapter{Software Testing Documentation}
+
+\section{Testing Strategy and QA Philosophy}
+
+Software testing is an essential verification and validation (V\&V) activity within the Software Development Life Cycle designed to uncover defects, ensure conformance with the Software Requirement Specification (SRS), and assure stakeholders of software quality, data security, and operational reliability.
+
+For the \textbf{Bank Loan Management System}, a rigorous structured testing strategy is formulated. Because financial software governs monetary assets, customer credit reputations, and legal commitments, testing emphasizes zero tolerance for data corruption, computational inaccuracies, or unauthorized access.
+
+The testing lifecycle follows standard software engineering phases:
+
+\begin{enumerate}
+  \item \textbf{Test Planning:} Identification of testing objectives, scope, test environment specifications, and resource allocations.
+  \item \textbf{Test Design \& Case Specification:} Formulation of structured test cases based on Black-Box and Functional Testing techniques.
+  \item \textbf{Simulated Execution \& Recording:} Comprehensive evaluation of proposed functional flows against simulated inputs.
+  \item \textbf{Defect Tracking \& Regression Analysis:} Categorization of simulated defects by severity and verification of resolution pathways.
+\end{enumerate}
+
+\section{Levels of Testing}
+
+The testing architecture organizes verification into four hierarchical tiers:
+
+\begin{enumerate}
+  \item \textbf{Unit Testing:} Focuses on the smallest testable units of software (individual methods, algorithms, and validation functions). In the proposed system, unit test suites target mathematical EMI computation routines, interest accrual equations, password hashing algorithms, and form input validators (e.g., PAN format regex, Aadhaar checksum algorithms).
+  \item \textbf{Integration Testing:} Verifies the structural interfaces, data exchanges, and protocol interactions between interconnected software modules. Tested integration pathways include:
+\end{enumerate}
+
+\begin{itemize}
+  \item Presentation Tier \_\_INLINE\_MATH\_0\_\_ REST Controller API endpoints.
+  \item Authentication Controller \_\_INLINE\_MATH\_0\_\_ JWT Token Generation \& Session Cache.
+  \item Loan Application Module \_\_INLINE\_MATH\_0\_\_ Document Repository Storage Service.
+  \item Business Logic Engine \_\_INLINE\_MATH\_0\_\_ RDBMS Data Access Layer (Hibernate/DAO).
+\end{itemize}
+
+\begin{enumerate}
+  \item \textbf{System Testing:} Validates the completely integrated software product against all specified functional, performance, security, and recovery requirements in an environment simulating real-world production conditions.
+  \item \textbf{Acceptance Testing (User Acceptance Testing - UAT):} Evaluates system usability, business workflow compliance, and operational readiness from the viewpoint of actual banking staff, credit underwriters, and customer representatives.
+\end{enumerate}
+
+\section{Black-Box Testing Methodologies}
+
+Test design relies on established Black-Box testing strategies, which evaluate system external behavior without referencing internal source code logic:
+
+\begin{itemize}
+  \item \textbf{Equivalence Partitioning (EP):} Divides the input domain of a business variable into valid and invalid equivalence classes, assuming that all values within a partition exhibit identical system behavior. For example, the applicant age field is partitioned into:
+  \item \textit{Invalid Class 1:} \_\_INLINE\_MATH\_0\_\_ (Underage applicant; system rejects).
+  \item \textit{Valid Class:} \_\_INLINE\_MATH\_0\_\_ (Eligible working age; system accepts).
+  \item \textit{Invalid Class 2:} \_\_INLINE\_MATH\_0\_\_ (Overage applicant; system rejects or requires guarantor).
+  \item \textbf{Boundary Value Analysis (BVA):} Tests system boundary thresholds where defects cluster most frequently. For a loan repayment tenure range of 6 to 360 months, BVA tests the exact boundaries and off-nominal neighbors: 5 months (Invalid), 6 months (Valid Minimum), 7 months (Nominal), 359 months (Nominal), 360 months (Valid Maximum), and 361 months (Invalid).
+  \item \textbf{Cause-Effect Graphing \& Decision Table Testing:} Models complex boolean decision combinations governing credit risk approval rules (e.g., combinations of credit score \_\_INLINE\_MATH\_0\_\_, debt-to-income \_\_INLINE\_MATH\_1\_\_, and document verification status = 'Verified').
+  \item \textbf{State Transition Testing:} Evaluates legal and illegal state transitions across the loan lifecycle (e.g., verifying that an application cannot transition from 'Draft' directly to 'Approved' without traversing 'Submitted' and 'Under Verification').
+\end{itemize}
+
+\section{Test Cases Specification}
+
+\textit{Note: In accordance with the academic guidelines of this project, the test execution results recorded below reflect simulated theoretical verification and proposed functional behaviors rather than live software executions.}
+
+\subsection{Table 5.1: Comprehensive System Test Cases}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l l l}
+\toprule
+\textbf{TC-ID} & \textbf{Module / Feature} & \textbf{Test Scenario} & \textbf{Preconditions} & \textbf{Input Data} & \textbf{Expected Output} & \textbf{Simulated Result} & \textbf{Status} \\
+\midrule
+\textbf{TC-001} & Authentication & Successful customer login & Valid registered user exists in database & Email: \texttt{rahul@example.com}, Pass: \texttt{Valid@123} & Login successful; JWT issued; redirect to Customer Dashboard & JWT issued; redirected to \texttt{/customer/dashboard} & \textbf{PASS} \\
+\textbf{TC-002} & Authentication & Login with incorrect password & Registered user exists & Email: \texttt{rahul@example.com}, Pass: \texttt{WrongPass} & Authentication fails; error message displayed; login denied & Error 'Invalid credentials' displayed; access blocked & \textbf{PASS} \\
+\textbf{TC-003} & Authentication & Account lockout after 5 failed attempts & Registered user exists & 5 consecutive invalid login submissions & Account locked for 15 minutes; notification sent to user email & Account status set to 'Locked'; alert triggered & \textbf{PASS} \\
+\textbf{TC-004} & Registration & New user registration with valid data & New unique email and PAN provided & Name: 'Pooja Sen', PAN: 'ABCDE9876Q', Income: 75000 & Record created in DB; verification email dispatched & Record inserted into \texttt{CUSTOMER}; activation email sent & \textbf{PASS} \\
+\textbf{TC-005} & Registration & Duplicate PAN rejection & Existing PAN in DB & PAN: \texttt{ABCDE1234F} (already registered) & Registration rejected; error 'PAN already registered' displayed & Duplicate key constraint caught; error surfaced & \textbf{PASS} \\
+\textbf{TC-006} & Registration & Underage applicant rejection (BVA) & None & DOB: \texttt{2010-05-15} (Age 15 years) & Registration rejected; error 'Applicant must be at least 18' & Validation error displayed; submission blocked & \textbf{PASS} \\
+\textbf{TC-007} & Loan Application & Loan application submission & Logged-in user on application form & Type: 'Home Loan', Amount: INR 2,500,000, Tenure: 240 & Application created with status 'Draft'; App ID returned & Record created in \texttt{LOAN\_APPLICATION}; ID generated & \textbf{PASS} \\
+\textbf{TC-008} & Loan Application & Requested amount below minimum (BVA) & Customer on application form & Amount: INR 5,000 (Min is INR 10,000) & Form validation error 'Amount must be at least INR 10,000' & Error message displayed; field highlighted red & \textbf{PASS} \\
+\textbf{TC-009} & Loan Application & Requested tenure above maximum (BVA) & Customer on application form & Tenure: 361 months (Max is 360 months) & Form validation error 'Tenure cannot exceed 360 months' & Error message displayed; submission blocked & \textbf{PASS} \\
+\textbf{TC-010} & Document Upload & Valid document upload (PDF) & Application in 'Draft' state & File: \texttt{salary\_slip.pdf}, Size: 1.5 MB & File uploaded to storage; status 'Pending'; entry in DB & File stored securely; entry written to \texttt{DOCUMENT} & \textbf{PASS} \\
+\textbf{TC-011} & Document Upload & Invalid file format rejection & Application in 'Draft' state & File: \texttt{malicious\_script.exe}, Size: 200 KB & Upload rejected; error 'Only PDF/JPEG/PNG files allowed' & MIME-type filter blocked file; error logged & \textbf{PASS} \\
+\textbf{TC-012} & Document Upload & File size limit exceeded (BVA) & Application in 'Draft' state & File: \texttt{large\_deed.pdf}, Size: 11.2 MB (Max 10 MB) & Upload rejected; error 'File size exceeds maximum 10 MB' & Upload intercepted; error notification displayed & \textbf{PASS} \\
+\textbf{TC-013} & Verification & Bank employee approves valid document & Document in 'Pending' state & Employee reviews document; clicks 'Verify' & Document status updated to 'Verified'; timestamp logged & Record updated in \texttt{DOCUMENT}; audit record saved & \textbf{PASS} \\
+\textbf{TC-014} & Verification & Bank employee requests re-upload & Unclear/illegible document & Employee enters remark 'Blurry image'; clicks 'Reject' & Status set to 'Reupload\_Requested'; alert to customer & Customer notified via dashboard and email & \textbf{PASS} \\
+\textbf{TC-015} & Credit Scoring & High credit score eligibility check & All documents 'Verified' & Credit Score: 810, DTI: 32\% (Threshold: Score >= 700) & Eligibility calculated as 'High Probability'; flagged for approval & Status updated to 'Eligible'; moved to queue & \textbf{PASS} \\
+\textbf{TC-016} & Credit Scoring & Low credit score auto-rejection & All documents 'Verified' & Credit Score: 520 (Threshold: Score >= 650) & Eligibility calculated as 'Ineligible'; status 'Rejected' & Application status updated to 'Rejected'; notice sent & \textbf{PASS} \\
+\textbf{TC-017} & Loan Approval & Officer approves eligible application & Application in 'Under\_Review' & Employee clicks 'Approve'; confirms terms & Status 'Approved'; Loan account instantiated in DB & Record inserted into \texttt{LOAN}; sanction letter generated & \textbf{PASS} \\
+\textbf{TC-018} & EMI Calculation & Verification of mathematical EMI routine & Loan sanctioned: 1,000,000 @ 10\% for 12 mos & Principal: 1,000,000, Rate: 10\%, Tenure: 12 months & Expected EMI: INR 87,915.89; 12 repayment records created & Calculated EMI matches formula within +/- 0.01 INR & \textbf{PASS} \\
+\textbf{TC-019} & Repayment & Timely full EMI payment processing & Active loan; Repayment 'Pending' & Payment: INR 87,916 via Net Banking gateway & Status 'Paid'; Outstanding balance decremented & \texttt{REPAYMENT} updated; \texttt{LOAN} balance reduced & \textbf{PASS} \\
+\textbf{TC-020} & Repayment & Overdue EMI penalty assessment & Payment overdue by 10 days & Due Date: 10 days ago; Grace period: 3 days & Late penalty (2\% surcharge) added to pending EMI & Penalty calculated; customer billed surcharge & \textbf{PASS} \\
+\textbf{TC-021} & Administration & Admin adds new loan category & Admin logged in & Cat: 'Solar Loan', Min: 50K, Max: 10L, Rate: 7.25\% & Category persisted; instantly visible in customer catalog & Record inserted into \texttt{LOAN\_CATEGORY}; visible in UI & \textbf{PASS} \\
+\textbf{TC-022} & Reporting & Admin generates monthly portfolio report & Historical loan data in DB & Date Range: 2026-01-01 to 2026-01-31, Format: PDF & Consolidated report generated summarizing metrics & Analytical PDF generated matching aggregate sums & \textbf{PASS} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Defect Classification Matrix}
+
+Defects discovered during testing are prioritized and tracked using an enterprise severity classification matrix:
+
+\begin{itemize}
+  \item \textbf{Severity 1 (Critical / Blocker):} System crash, complete data loss, unauthorized access breach, or failure of core financial calculations (e.g., incorrect EMI calculation or failure to record payments). Must be resolved immediately prior to any progression.
+  \item \textbf{Severity 2 (High / Major):} Major functional failure with no available workaround (e.g., document upload failure on valid PDF, unable to submit completed loan application).
+  \item \textbf{Severity 3 (Medium / Normal):} Functional defect with an operational workaround (e.g., search filter discrepancy in employee dashboard, failure to send non-critical email alert).
+  \item \textbf{Severity 4 (Low / Minor):} Cosmetic, grammatical, or minor user interface alignment discrepancies that do not impair business workflows.
+\end{itemize}
+
+\section{Test Summary and Quality Metrics}
+
+A total of 22 simulated functional test cases were designed and evaluated across all core system modules:
+
+\begin{itemize}
+  \item \textbf{Total Test Cases Executed:} 22
+  \item \textbf{Total Passed:} 22 (100\% of defined scenarios)
+  \item \textbf{Total Failed:} 0
+  \item \textbf{Critical Defects Identified:} 0
+  \item \textbf{Test Coverage:} Comprehensive coverage across Authentication (13.6\%), Registration (13.6\%), Application Ingestion (13.6\%), Document Management (13.6\%), Verification \& Scoring (18.2\%), Repayment Engine (13.6\%), and Administration (13.6\%).
+\end{itemize}

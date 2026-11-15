@@ -1,0 +1,209 @@
+\chapter{Software Project Estimation}
+
+\section{Function Point Analysis (FPA) Methodology}
+
+Software project estimation is the quantitative discipline in software engineering that predicts the size, effort, duration, and staffing required to build a software system. Function Point Analysis (FPA), established by Allan Albrecht and standardized by the International Function Point Users Group (IFPUG), is an industry-standard indirect metric that measures the functional size of software from the user's business viewpoint, independent of programming language, development framework, or deployment platform.
+
+Function Point Analysis categorizes system functionalities into five standard functional components:
+
+\begin{enumerate}
+  \item \textbf{External Inputs (EI):} Elementary processes that process data or control information entering the system from external entities, updating internal logical files.
+  \item \textbf{External Outputs (EO):} Elementary processes that present derived, processed, or calculated data to external entities, typically involving mathematical transformation or report generation.
+  \item \textbf{External Inquiries (EQ):} Elementary processes that retrieve data from internal logical files and present it to external entities without modifying system state or performing derived mathematical calculations.
+  \item \textbf{Internal Logical Files (ILF):} User-identifiable groups of logically related data maintained completely within the system boundary through system business processes.
+  \item \textbf{External Interface Files (EIF):} User-identifiable groups of logically related data referenced by the system but maintained entirely within external applications.
+\end{enumerate}
+
+\section{External Inputs (EI) Identification}
+
+\subsection{Table 6.1: External Inputs (EI) Complexity Classification}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{EI ID} & \textbf{Functional Process Description} & \textbf{Data Element Types (DET)} & \textbf{File Types Referenced (FTR)} & \textbf{Assessed Complexity} & \textbf{Weight} \\
+\midrule
+\textbf{EI-1} & Customer Registration & 12 & 1 (CUSTOMER) & Average & 4 \\
+\textbf{EI-2} & Customer Login / Credential Authentication & 4 & 1 (CUSTOMER) & Low & 3 \\
+\textbf{EI-3} & Customer Profile Update & 8 & 1 (CUSTOMER) & Low & 3 \\
+\textbf{EI-4} & Loan Application Submission & 10 & 2 (CUSTOMER, LOAN\_APPLICATION) & Average & 4 \\
+\textbf{EI-5} & Supporting Document Upload & 6 & 2 (LOAN\_APPLICATION, DOCUMENT) & Low & 3 \\
+\textbf{EI-6} & Bank Employee Underwriting Review / Decision & 6 & 2 (LOAN\_APPLICATION, BANK\_EMPLOYEE) & Average & 4 \\
+\textbf{EI-7} & Document Verification Status Update & 5 & 2 (DOCUMENT, BANK\_EMPLOYEE) & Low & 3 \\
+\textbf{EI-8} & Loan Sanction and Disbursal Authorization & 8 & 2 (LOAN\_APPLICATION, LOAN) & Average & 4 \\
+\textbf{EI-9} & Loan Repayment / EMI Transaction Submission & 8 & 2 (LOAN, REPAYMENT) & Average & 4 \\
+\textbf{EI-10} & Admin Create / Update Loan Product Category & 7 & 1 (LOAN\_CATEGORY) & Low & 3 \\
+\textbf{EI-11} & Admin Employee Account Management & 9 & 1 (BANK\_EMPLOYEE) & Average & 4 \\
+\textbf{EI-12} & Customer Password Reset Request & 4 & 1 (CUSTOMER) & Low & 3 \\
+\textbf{Total EI Points} & - & - & - & - & \textbf{42} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{External Outputs (EO) Identification}
+
+\subsection{Table 6.2: External Outputs (EO) Complexity Classification}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{EO ID} & \textbf{Functional Process Description} & \textbf{Data Element Types (DET)} & \textbf{File Types Referenced (FTR)} & \textbf{Assessed Complexity} & \textbf{Weight} \\
+\midrule
+\textbf{EO-1} & Formal Loan Sanction Letter Generation (PDF) & 16 & 3 (CUSTOMER, APP, LOAN) & High & 7 \\
+\textbf{EO-2} & Complete EMI Amortization Schedule Calculation & 12 & 2 (LOAN, REPAYMENT) & High & 7 \\
+\textbf{EO-3} & Monthly Repayment Receipt Generation (PDF) & 10 & 2 (CUSTOMER, REPAYMENT) & Average & 5 \\
+\textbf{EO-4} & Loan Rejection Formal Notification Letter & 8 & 2 (CUSTOMER, APP) & Average & 5 \\
+\textbf{EO-5} & Executive Loan Portfolio Analytics Summary & 18 & 4 (APP, LOAN, REPAY, CUST) & High & 7 \\
+\textbf{EO-6} & Delinquency / Overdue Repayments Audit Report & 14 & 3 (CUSTOMER, LOAN, REPAY) & High & 7 \\
+\textbf{EO-7} & Final Loan Closure Certificate (NOC) & 10 & 2 (CUSTOMER, LOAN) & Average & 5 \\
+\textbf{Total EO Points} & - & - & - & - & \textbf{43} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{External Inquiries (EQ) Identification}
+
+\subsection{Table 6.3: External Inquiries (EQ) Complexity Classification}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{EQ ID} & \textbf{Functional Process Description} & \textbf{Data Element Types (DET)} & \textbf{File Types Referenced (FTR)} & \textbf{Assessed Complexity} & \textbf{Weight} \\
+\midrule
+\textbf{EQ-1} & Customer Application Status Inquiry & 6 & 2 (CUSTOMER, LOAN\_APPLICATION) & Low & 3 \\
+\textbf{EQ-2} & Customer Active Loan Balance \& History Inquiry & 8 & 2 (LOAN, REPAYMENT) & Average & 4 \\
+\textbf{EQ-3} & Employee Pending Applications Queue Search & 9 & 2 (CUSTOMER, LOAN\_APPLICATION) & Average & 4 \\
+\textbf{EQ-4} & Employee Document Inspection View & 6 & 1 (DOCUMENT) & Low & 3 \\
+\textbf{EQ-5} & Loan Schemes Catalog \& Rate Inquiry & 7 & 1 (LOAN\_CATEGORY) & Low & 3 \\
+\textbf{EQ-6} & Admin User Audit Search Inquiry & 8 & 2 (CUSTOMER, BANK\_EMPLOYEE) & Average & 4 \\
+\textbf{Total EQ Points} & - & - & - & - & \textbf{21} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Internal Logical Files (ILF) Identification}
+
+\subsection{Table 6.4: Internal Logical Files (ILF) Complexity Classification}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{ILF ID} & \textbf{Logical File / Table Name} & \textbf{Record Element Types (RET)} & \textbf{Data Element Types (DET)} & \textbf{Assessed Complexity} & \textbf{Weight} \\
+\midrule
+\textbf{ILF-1} & \texttt{CUSTOMER} & 1 & 13 & Low & 7 \\
+\textbf{ILF-2} & \texttt{LOAN\_APPLICATION} & 1 & 11 & Low & 7 \\
+\textbf{ILF-3} & \texttt{BANK\_EMPLOYEE} & 1 & 9 & Low & 7 \\
+\textbf{ILF-4} & \texttt{DOCUMENT} & 1 & 11 & Low & 7 \\
+\textbf{ILF-5} & \texttt{LOAN} & 1 & 11 & Low & 7 \\
+\textbf{ILF-6} & \texttt{REPAYMENT} & 1 & 12 & Low & 7 \\
+\textbf{ILF-7} & \texttt{LOAN\_CATEGORY} & 1 & 7 & Low & 7 \\
+\textbf{Total ILF Points} & - & - & - & - & \textbf{49} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{External Interface Files (EIF) Identification}
+
+\subsection{Table 6.5: External Interface Files (EIF) Complexity Classification}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{EIF ID} & \textbf{External System Interface File} & \textbf{Record Element Types (RET)} & \textbf{Data Element Types (DET)} & \textbf{Assessed Complexity} & \textbf{Weight} \\
+\midrule
+\textbf{EIF-1} & External Credit Bureau Score Interface (CIBIL/Experian) & 1 & 8 & Low & 5 \\
+\textbf{EIF-2} & Payment Gateway Settlement Webhook Feed & 1 & 9 & Low & 5 \\
+\textbf{Total EIF Points} & - & - & - & - & \textbf{10} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Unadjusted Function Points (UFP) Calculation}
+
+The Unadjusted Function Points (UFP) represents the aggregate sum of functional points across all five IFPUG categories:
+
+\_\_DISPLAY\_MATH\_0\_\_
+
+\_\_DISPLAY\_MATH\_0\_\_
+
+\section{General System Characteristics (GSC)}
+
+The IFPUG model defines 14 General System Characteristics (GSCs) representing global non-functional and environmental factors. Each characteristic is assigned a Degree of Influence (DI) rating from 0 (No Influence) to 5 (Strong / Essential Influence):
+
+\subsection{Table 6.6: General System Characteristics Rating}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l}
+\toprule
+\textbf{No.} & \textbf{Characteristic Description} & \textbf{Degree of Influence (0 - 5)} & \textbf{Justification} \\
+\midrule
+\textbf{C1} & Data Communications & 4 & Heavy online data exchange over HTTPS with distributed clients \\
+\textbf{C2} & Distributed Data Processing & 3 & Distributed 3-tier architecture with separate application and DB tiers \\
+\textbf{C3} & Performance Objectives & 4 & Strict transaction response constraints under 2 seconds for financial UI \\
+\textbf{C4} & Heavily Used Configuration & 3 & High volume of concurrent loan applications and batch EMI updates \\
+\textbf{C5} & Transaction Rate & 4 & High transaction frequency during banking hours and month-end EMI dates \\
+\textbf{C6} & Online Data Entry & 5 & 100\% of customer proposals, documents, and reviews occur online \\
+\textbf{C7} & End-User Efficiency & 4 & Optimized responsive workflows designed to accelerate underwriter tasks \\
+\textbf{C8} & Online Update & 4 & Immediate real-time updates to loan balances, application states, and ledgers \\
+\textbf{C9} & Complex Processing & 4 & Mathematical compound amortization formulas, risk algorithms, score logic \\
+\textbf{C10} & Reusability & 3 & Modular components designed for multi-product expansion \\
+\textbf{C11} & Installation Ease & 2 & Standardized automated web deployment; minimal client footprint \\
+\textbf{C12} & Operational Ease & 4 & Automated daily backup procedures, audit logging, recovery mechanisms \\
+\textbf{C13} & Multiple Sites & 3 & Multi-branch banking access across geographic regional offices \\
+\textbf{C14} & Facilitate Change & 4 & Configurable loan categories, dynamic interest rates, flexible parameters \\
+\textbf{Total Degree of Influence (TDI)} & - & \textbf{51} & Sum of all 14 General System Characteristics \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Value Adjustment Factor (VAF) and Final Function Points}
+
+The Value Adjustment Factor (VAF) scales the unadjusted size based on the Total Degree of Influence:
+
+\_\_INLINE\_MATH\_0\_\_	ext{VAF} = 0.65 + \textbackslash{}left(0.01 	imes \textbackslash{}sum\_{i=1}\textasciicircum{}{14} C\_i
+
+ight) = 0.65 + (0.01 	imes 51) = 0.65 + 0.51 = \textbackslash{}mathbf{1.16}\_\_INLINE\_MATH\_0\_\_
+
+The final Adjusted Function Points (FP) is determined as:
+
+\_\_DISPLAY\_MATH\_0\_\_
+
+\section{Effort and Schedule Estimation (COCOMO II Derivation)}
+
+Using standard Software Engineering metrics (QSM / IFPUG benchmarks), one Function Point in an enterprise object-oriented language (Java / Python) corresponds to approximately 50 Source Lines of Code (SLOC):
+
+\_\_DISPLAY\_MATH\_0\_\_
+
+Applying the basic COCOMO (Constructive Cost Model) for Semi-Detached software projects:
+
+\begin{itemize}
+  \item \_\_INLINE\_MATH\_0\_\_
+  \item \_\_INLINE\_MATH\_0\_\_
+  \item \_\_INLINE\_MATH\_0\_\_
+\end{itemize}
+
+This mathematical estimation confirms that the Bank Loan Management System represents a robust, highly scoped engineering project ideally suited for academic and commercial enterprise development.

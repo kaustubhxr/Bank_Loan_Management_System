@@ -1,0 +1,999 @@
+\chapter{Software Requirements Specification}
+
+\section{Introduction}
+
+\subsection{Purpose}
+
+The purpose of this Software Requirements Specification (SRS) document is to provide a comprehensive and detailed description of the requirements for the \textbf{Bank Loan Management System}. This document serves as the primary reference for the technical design, development, testing, and maintenance of the system. It is intended to establish a clear understanding between all stakeholders regarding the functional and non-functional requirements, system interfaces, design constraints, and acceptance criteria.
+
+This SRS document is prepared in alignment with the IEEE Std 830-1998 (IEEE Recommended Practice for Software Requirements Specifications) guidelines, adapted to suit the academic context of this project. It provides sufficient detail to serve as the basis for system design, test case development, and project estimation activities described in subsequent chapters of this report.
+
+\subsection{Scope}
+
+The Bank Loan Management System is a web-based software application designed to automate the management of bank loan operations. The system covers the following major functional areas:
+
+\begin{itemize}
+  \item Customer registration, authentication, and profile management
+  \item Loan application submission across five loan categories
+  \item Document upload and management
+  \item Automated eligibility assessment
+  \item Multi-stage loan approval workflow
+  \item EMI calculation and repayment schedule generation
+  \item Repayment tracking and management
+  \item Employee workload management
+  \item Administrative functions including loan category management and reporting
+  \item Notification and alert generation
+\end{itemize}
+
+The system does not include actual financial transaction processing, integration with external credit agencies, mobile application development, or multi-language support, as described in the project scope (Section 1.6).
+
+\subsection{Intended Audience}
+
+This SRS document is intended for the following audiences:
+
+\begin{enumerate}
+  \item \textbf{Project Guide / Faculty:} For evaluation of the completeness and correctness of the requirements analysis.
+  \item \textbf{Software Developers:} For understanding the functional and non-functional requirements to be implemented.
+  \item \textbf{System Designers:} For deriving the system architecture, database schema, and user interface designs.
+  \item \textbf{Testers:} For developing test cases and test scenarios based on the specified requirements.
+  \item \textbf{Project Managers:} For planning, scheduling, and estimating the project based on the documented requirements.
+  \item \textbf{Future Maintainers:} For understanding the system's intended behavior during maintenance and enhancement activities.
+\end{enumerate}
+
+\subsection{Definitions and Abbreviations}
+
+\textbf{Table 2.1: Definitions and Abbreviations}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Term / Abbreviation} & \textbf{Definition} \\
+\midrule
+BLMS & Bank Loan Management System \\
+SRS & Software Requirements Specification \\
+EMI & Equated Monthly Installment – a fixed payment amount made by a borrower to a lender at a specified date each calendar month \\
+DFD & Data Flow Diagram \\
+UML & Unified Modeling Language \\
+ER & Entity-Relationship \\
+RDBMS & Relational Database Management System \\
+GUI & Graphical User Interface \\
+HTTP/HTTPS & Hypertext Transfer Protocol / Secure \\
+API & Application Programming Interface \\
+CRUD & Create, Read, Update, Delete – the four basic operations of persistent storage \\
+FR & Functional Requirement \\
+NFR & Non-Functional Requirement \\
+IEEE & Institute of Electrical and Electronics Engineers \\
+SDLC & Software Development Life Cycle \\
+ROI & Return on Investment \\
+ACID & Atomicity, Consistency, Isolation, Durability – properties of database transactions \\
+RBAC & Role-Based Access Control \\
+SMTP & Simple Mail Transfer Protocol \\
+PDF & Portable Document Format \\
+JPEG/PNG & Image file formats (Joint Photographic Experts Group / Portable Network Graphics) \\
+SQL & Structured Query Language \\
+PK & Primary Key \\
+FK & Foreign Key \\
+INR & Indian Rupee \\
+KYC & Know Your Customer – the process of verifying the identity of clients \\
+NPA & Non-Performing Asset – a loan for which the borrower has failed to make scheduled payments \\
+CIBIL & Credit Information Bureau (India) Limited – a credit information company \\
+PIN & Personal Identification Number \\
+OTP & One-Time Password \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{References}
+
+\begin{enumerate}
+  \item IEEE Std 830-1998, \textit{IEEE Recommended Practice for Software Requirements Specifications}, IEEE Computer Society, 1998.
+  \item Pressman, R.S., \textit{Software Engineering: A Practitioner's Approach}, 8th Edition, McGraw-Hill Education, 2014.
+  \item Sommerville, I., \textit{Software Engineering}, 10th Edition, Pearson Education, 2015.
+  \item Jalote, P., \textit{An Integrated Approach to Software Engineering}, 3rd Edition, Springer, 2005.
+  \item Pfleeger, S.L. and Atlee, J.M., \textit{Software Engineering: Theory and Practice}, 4th Edition, Pearson, 2009.
+\end{enumerate}
+
+\section{Overall Description}
+
+\subsection{Product Perspective}
+
+The Bank Loan Management System is a self-contained, standalone web-based application that does not replace or interface with any existing bank systems. It is designed as an independent system that manages the complete lifecycle of bank loans within its own database and application boundaries.
+
+The system is structured as a three-tier architecture:
+
+\begin{enumerate}
+  \item \textbf{Presentation Tier (Client Side):} Web-based graphical user interface accessible through standard web browsers. This tier is responsible for rendering the user interface, capturing user inputs, and displaying system outputs.
+  \item \textbf{Application Tier (Server Side):} The business logic layer that processes user requests, implements business rules (eligibility assessment, EMI calculation, workflow management), and mediates between the presentation and data tiers.
+  \item \textbf{Data Tier (Database):} A relational database management system that stores all persistent data including customer information, loan applications, documents, employee data, loan details, and repayment records.
+\end{enumerate}
+
+The system supports three distinct user roles, each with its own interface and set of functionalities:
+
+\begin{itemize}
+  \item \textbf{Customer Portal:} For bank customers to register, apply for loans, upload documents, track application status, view repayment schedules, and manage their profiles.
+  \item \textbf{Employee Portal:} For bank employees (Loan Officers, Senior Loan Officers, Branch Managers) to review applications, verify documents, assess eligibility, approve or reject applications, and manage their assigned workload.
+  \item \textbf{Admin Panel:} For system administrators to manage loan categories, employee accounts, system configurations, and generate reports.
+\end{itemize}
+
+\subsection{Product Functions}
+
+The major functions of the Bank Loan Management System are summarized as follows:
+
+\begin{enumerate}
+  \item \textbf{User Management:} Registration, login, logout, password management, and profile management for all user types.
+  \item \textbf{Loan Category Management:} Creation, modification, and management of loan categories with associated parameters (interest rates, tenure options, eligibility criteria).
+  \item \textbf{Loan Application Processing:} Online submission of loan applications with required personal, financial, and loan-specific information.
+  \item \textbf{Document Management:} Upload, storage, retrieval, and verification of supporting documents.
+  \item \textbf{Eligibility Assessment:} Automated evaluation of applicant eligibility based on predefined criteria.
+  \item \textbf{Approval Workflow:} Multi-stage review and approval process with role-based authorization.
+  \item \textbf{EMI Calculation:} Computation of EMI amounts based on loan parameters.
+  \item \textbf{Repayment Management:} Generation of repayment schedules, recording of payments, and tracking of overdue installments.
+  \item \textbf{Reporting:} Generation of various management and operational reports.
+  \item \textbf{Notifications:} Automated alerts for application status changes, payment reminders, and system events.
+\end{enumerate}
+
+\subsection{User Classes and Characteristics}
+
+The Bank Loan Management System serves three primary user classes:
+
+\textbf{1. Customer (Bank Customer)}
+
+\begin{itemize}
+  \item \textbf{Description:} Individuals seeking bank loans. They use the system to register, submit loan applications, upload documents, track application status, view EMI details, and manage repayments.
+  \item \textbf{Frequency of Use:} Occasional to regular (during application period and throughout loan tenure).
+  \item \textbf{Technical Expertise:} Basic digital literacy; familiarity with web-based applications.
+  \item \textbf{Security Level:} Access to own data only; no access to other customers' data or administrative functions.
+\end{itemize}
+
+\textbf{2. Bank Employee}
+
+\begin{itemize}
+  \item \textbf{Sub-roles:}
+  \item \textbf{Loan Officer:} Reviews new applications, verifies documents, performs initial eligibility assessment.
+  \item \textbf{Senior Loan Officer:} Reviews assessments by Loan Officers, makes approval/rejection decisions for standard loans.
+  \item \textbf{Branch Manager:} Approves high-value loans, oversees branch loan operations, reviews performance metrics.
+  \item \textbf{Description:} Bank staff responsible for processing loan applications through the approval workflow.
+  \item \textbf{Frequency of Use:} Daily (during work hours).
+  \item \textbf{Technical Expertise:} Moderate; trained on the system.
+  \item \textbf{Security Level:} Access to assigned applications and employee-level reports; no access to system administration.
+\end{itemize}
+
+\textbf{3. Administrator (System Administrator)}
+
+\begin{itemize}
+  \item \textbf{Description:} IT personnel or designated administrative staff responsible for system configuration, user management, loan category management, and system maintenance.
+  \item \textbf{Frequency of Use:} Regular (daily to weekly).
+  \item \textbf{Technical Expertise:} High; proficient in system administration.
+  \item \textbf{Security Level:} Full system access including configuration, user management, and reporting.
+\end{itemize}
+
+\subsection{Operating Environment}
+
+The Bank Loan Management System is designed to operate in the following environment:
+
+\begin{itemize}
+  \item \textbf{Server Operating System:} Windows Server 2019/2022 or Ubuntu Linux 20.04 LTS / 22.04 LTS
+  \item \textbf{Web Server:} Apache HTTP Server 2.4+ or Nginx 1.18+
+  \item \textbf{Application Server:} Apache Tomcat 9.0+ (for Java-based implementation) or equivalent
+  \item \textbf{Database Server:} MySQL 8.0+ or PostgreSQL 14+
+  \item \textbf{Client Operating System:} Any OS with a modern web browser (Windows 10/11, macOS, Linux, ChromeOS)
+  \item \textbf{Client Web Browser:} Google Chrome 90+, Mozilla Firefox 90+, Microsoft Edge 90+, Apple Safari 14+
+  \item \textbf{Network:} HTTP/HTTPS over TCP/IP; minimum 1 Mbps internet connection for clients
+  \item \textbf{Email Server:} SMTP-compatible email server for notifications
+\end{itemize}
+
+\subsection{Design Constraints}
+
+The following constraints influence the design of the Bank Loan Management System:
+
+\begin{enumerate}
+  \item \textbf{Web-Based Architecture:} The system must be accessible through standard web browsers without requiring installation of client-side software (plugins, desktop applications).
+  \item \textbf{Relational Database:} The system must use a relational database management system for data storage to ensure data integrity and support complex queries.
+  \item \textbf{Role-Based Access Control:} The system must enforce role-based access control to ensure that users can only access functionalities and data appropriate to their role.
+  \item \textbf{Data Validation:} All user inputs must be validated both on the client side (for user experience) and on the server side (for security) before processing.
+  \item \textbf{Session Management:} The system must implement secure session management with automatic session timeout after a defined period of inactivity.
+  \item \textbf{Password Security:} User passwords must be stored in hashed form using a cryptographically secure hashing algorithm; plaintext password storage is prohibited.
+  \item \textbf{Document Size Limits:} Uploaded documents must be limited to 5 MB per file and restricted to permitted formats (PDF, JPEG, PNG).
+  \item \textbf{Responsive Design:} The user interface should be responsive, adapting to different screen sizes and resolutions for usability on desktops, laptops, and tablets.
+\end{enumerate}
+
+\section{Functional Requirements}
+
+The following functional requirements define the specific behaviors and functions that the Bank Loan Management System must provide. Each requirement is identified by a unique ID and specifies the description, actor, priority, and expected behavior.
+
+\textbf{Table 2.2: Functional Requirements Summary}
+
+\subsection{FR-001: User Registration}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-001 \\
+\textbf{Requirement Name} & User Registration \\
+\textbf{Description} & The system shall allow new customers to register by providing their personal details, creating login credentials, and agreeing to the terms and conditions. \\
+\textbf{Actor} & Customer \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The customer navigates to the registration page and enters required information including full name, date of birth, gender, email address, phone number, residential address, Aadhaar number, PAN number, and a chosen username and password. The system validates all inputs (format, uniqueness of email/username/phone), displays appropriate error messages for invalid inputs, and upon successful validation, creates a new customer account. A confirmation email is sent to the registered email address. The customer is redirected to the login page with a success message. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-002: User Login}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-002 \\
+\textbf{Requirement Name} & User Login \\
+\textbf{Description} & The system shall allow registered users (customers, employees, administrators) to log in using their credentials. \\
+\textbf{Actor} & Customer, Bank Employee, Administrator \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The user navigates to the login page and enters their username/email and password. The system validates the credentials against the stored records. Upon successful authentication, the system creates a secure session and redirects the user to their role-specific dashboard (Customer Dashboard, Employee Dashboard, or Admin Panel). If authentication fails, an error message "Invalid username or password" is displayed without revealing which credential is incorrect. After five consecutive failed login attempts, the account is temporarily locked for 30 minutes. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-003: Loan Application Submission}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-003 \\
+\textbf{Requirement Name} & Loan Application Submission \\
+\textbf{Description} & The system shall allow authenticated customers to submit loan applications for any available loan category. \\
+\textbf{Actor} & Customer \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The customer selects a loan category from the available options (Home Loan, Personal Loan, Education Loan, Vehicle Loan, Business Loan). The system presents a loan application form specific to the selected category, pre-populated with available customer profile data. The customer enters the required loan details including requested loan amount, preferred tenure, purpose of loan, employment details, monthly income, existing liabilities, and any category-specific information. The system validates all inputs against the defined constraints (e.g., minimum/maximum loan amounts, valid tenure ranges). Upon successful submission, the system generates a unique Application ID, sets the application status to "Submitted," records the submission timestamp, and displays a confirmation message with the Application ID. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-004: Loan Category Selection}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-004 \\
+\textbf{Requirement Name} & Loan Category Selection \\
+\textbf{Description} & The system shall display available loan categories with their details and allow customers to select a category for their loan application. \\
+\textbf{Actor} & Customer \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The system displays a list of available loan categories, each showing the category name, brief description, applicable interest rate range, minimum and maximum loan amounts, maximum tenure, and basic eligibility criteria. The customer can view detailed information for each category and select the desired category to proceed with the application. The system loads the appropriate application form based on the selected category. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-005: Document Upload}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-005 \\
+\textbf{Requirement Name} & Document Upload \\
+\textbf{Description} & The system shall allow customers to upload supporting documents as part of their loan application. \\
+\textbf{Actor} & Customer \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & During or after the loan application submission, the system presents a list of required documents based on the selected loan category (e.g., Identity Proof, Address Proof, Income Proof, Bank Statements, Property Documents). The customer can upload documents in permitted formats (PDF, JPEG, PNG) with a maximum file size of 5 MB per document. The system validates the file format and size before accepting the upload. Upon successful upload, the document is stored securely, associated with the loan application, and its status is set to "Uploaded." The system displays a confirmation with the uploaded document details. If the format or size is invalid, an appropriate error message is displayed. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-006: Document Verification}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-006 \\
+\textbf{Requirement Name} & Document Verification \\
+\textbf{Description} & The system shall enable bank employees to view and verify documents uploaded by customers. \\
+\textbf{Actor} & Bank Employee (Loan Officer) \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The Loan Officer accesses the document verification section of an assigned loan application. The system displays all uploaded documents with their names, types, upload dates, and current verification status. The Loan Officer can view each document and mark it as "Verified" or "Rejected" with remarks. If a document is rejected, the system sends a notification to the customer indicating the reason for rejection and requesting re-upload. When all required documents are verified, the application status is updated to "Documents Verified." \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-007: Loan Eligibility Assessment}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-007 \\
+\textbf{Requirement Name} & Loan Eligibility Assessment \\
+\textbf{Description} & The system shall perform automated eligibility assessment of loan applications based on predefined criteria. \\
+\textbf{Actor} & System (Automated) / Bank Employee \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & Once documents are verified, the system automatically evaluates the applicant's eligibility based on predefined criteria for the selected loan category. Eligibility criteria include: age range (e.g., 21-60 years), minimum monthly income (e.g., INR 25,000), employment type (salaried, self-employed, business), minimum employment tenure (e.g., 2 years), debt-to-income ratio (e.g., maximum 50\%), and loan-to-value ratio (for secured loans). The system computes an eligibility score and generates an eligibility report indicating whether the applicant meets the criteria, with details of which criteria are met and which are not. The application status is updated to "Eligibility Assessed." The Loan Officer can review the automated assessment, add remarks, and forward the application for approval. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-008: Loan Approval/Rejection}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-008 \\
+\textbf{Requirement Name} & Loan Approval/Rejection \\
+\textbf{Description} & The system shall enable authorized bank employees to approve or reject loan applications. \\
+\textbf{Actor} & Bank Employee (Senior Loan Officer / Branch Manager) \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The authorized employee (Senior Loan Officer for standard loans, Branch Manager for high-value loans) reviews the loan application details, document verification status, eligibility assessment report, and Loan Officer's remarks. The employee can approve or reject the application with mandatory remarks. Upon approval, the system updates the application status to "Approved," generates the loan details (approved amount, interest rate, tenure, EMI), creates a loan record, generates the repayment schedule, and sends an approval notification to the customer. Upon rejection, the system updates the status to "Rejected," records the rejection reason, and sends a rejection notification to the customer with the reason. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-009: Application Status Tracking}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-009 \\
+\textbf{Requirement Name} & Application Status Tracking \\
+\textbf{Description} & The system shall allow customers to track the current status of their loan applications in real time. \\
+\textbf{Actor} & Customer \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The customer navigates to the "My Applications" section of their dashboard. The system displays a list of all loan applications submitted by the customer, each showing the Application ID, loan category, submission date, requested amount, and current status. The customer can click on any application to view its detailed status history, showing all status transitions with timestamps and remarks (e.g., Submitted → Under Review → Documents Verified → Eligibility Assessed → Approved/Rejected). A visual status tracker (progress bar or step indicator) displays the application's position in the overall workflow. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-010: EMI Calculation}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-010 \\
+\textbf{Requirement Name} & EMI Calculation \\
+\textbf{Description} & The system shall calculate the Equated Monthly Installment (EMI) for loan applications. \\
+\textbf{Actor} & System (Automated) / Customer \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The system provides an EMI calculator that accepts the loan amount (P), annual interest rate (R), and tenure in months (N) as inputs. The EMI is calculated using the standard reducing balance formula: EMI = [P × R × (1+R)^N] / [(1+R)^N - 1], where R is the monthly interest rate (annual rate / 12 / 100). The system displays the calculated EMI amount, total interest payable, and total amount payable (principal + interest). The EMI calculator is available as a standalone tool on the customer portal and is also used internally to compute EMI when a loan is approved. Upon loan approval, the system uses the approved loan amount, applicable interest rate, and selected tenure to calculate the EMI and generate the repayment schedule. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-011: Repayment Management}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-011 \\
+\textbf{Requirement Name} & Repayment Management \\
+\textbf{Description} & The system shall manage the repayment lifecycle of approved loans, including schedule generation, payment recording, and overdue tracking. \\
+\textbf{Actor} & Customer, Bank Employee, System (Automated) \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & Upon loan approval, the system generates a detailed repayment schedule showing each installment number, due date, EMI amount, principal component, interest component, and outstanding balance. Customers can view their repayment schedule and payment history on their dashboard. Bank employees can record EMI payments received, updating the outstanding balance and marking installments as "Paid." The system automatically identifies overdue installments (payments not recorded by the due date) and updates their status to "Overdue." Automated reminder notifications are sent to customers 7 days before the EMI due date and on the due date. Overdue notifications are sent 1 day, 7 days, and 15 days after the due date. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-012: User Account Management}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-012 \\
+\textbf{Requirement Name} & User Account Management \\
+\textbf{Description} & The system shall allow customers to manage their account profiles and allow administrators to manage all user accounts. \\
+\textbf{Actor} & Customer, Administrator \\
+\textbf{Priority} & Medium \\
+\textbf{Expected Behavior} & Customers can view and update their profile information (phone number, email, address) through the profile management section. Password changes require entering the current password and the new password twice for confirmation. Administrators can view a list of all customer accounts, search/filter by various criteria, activate or deactivate customer accounts, and reset customer passwords. Administrators can also create, modify, and deactivate employee accounts with appropriate role assignments. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-013: Employee Record Management}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-013 \\
+\textbf{Requirement Name} & Employee Record Management \\
+\textbf{Description} & The system shall allow administrators to manage bank employee records within the system. \\
+\textbf{Actor} & Administrator \\
+\textbf{Priority} & Medium \\
+\textbf{Expected Behavior} & Administrators can add new employee accounts by entering employee details (name, employee ID, email, phone, department, designation) and assigning a system role (Loan Officer, Senior Loan Officer, Branch Manager). Administrators can view, search, and filter the list of all employees. Employee profiles can be updated (contact information, role, status). Employee accounts can be deactivated (soft delete) when an employee leaves or is transferred. Deactivated employee accounts are retained for audit purposes but cannot be used for login. The system tracks the number of active applications assigned to each employee for workload management. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-014: Loan Category Management}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-014 \\
+\textbf{Requirement Name} & Loan Category Management \\
+\textbf{Description} & The system shall allow administrators to manage loan categories and their associated parameters. \\
+\textbf{Actor} & Administrator \\
+\textbf{Priority} & Medium \\
+\textbf{Expected Behavior} & Administrators can create new loan categories by specifying the category name, description, interest rate (or range), minimum and maximum loan amounts, maximum tenure, required documents list, and eligibility criteria parameters. Existing loan categories can be modified (e.g., updating interest rates, eligibility criteria). Loan categories can be activated or deactivated. Deactivated categories are not available for new applications but existing loans under the category are unaffected. The system prevents deletion of categories that have active loan applications or loans. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-015: Report Generation}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-015 \\
+\textbf{Requirement Name} & Report Generation \\
+\textbf{Description} & The system shall provide reporting capabilities for management and operational oversight. \\
+\textbf{Actor} & Administrator, Bank Employee (Branch Manager) \\
+\textbf{Priority} & Medium \\
+\textbf{Expected Behavior} & The system generates the following types of reports: (1) Loan Application Summary Report – showing the number of applications by status, category, and date range; (2) Loan Approval/Rejection Report – showing approved and rejected applications with reasons; (3) Loan Disbursement Report – showing approved loans with amounts and dates; (4) Repayment Status Report – showing EMI payment status across all active loans; (5) Overdue Report – listing all overdue installments with customer details and overdue duration; (6) Employee Performance Report – showing the number of applications processed by each employee; (7) Loan Portfolio Summary – showing the overall loan portfolio composition by category, amount, and status. Reports can be filtered by date range, loan category, status, and employee. Reports are displayed on-screen with options for export. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-016: Notification and Alerts}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-016 \\
+\textbf{Requirement Name} & Notification and Alerts \\
+\textbf{Description} & The system shall generate automated notifications and alerts for key events in the loan lifecycle. \\
+\textbf{Actor} & System (Automated) \\
+\textbf{Priority} & Medium \\
+\textbf{Expected Behavior} & The system generates and sends notifications via email and in-app alerts for the following events: (1) Successful registration – welcome email to the customer; (2) Loan application submission – confirmation with Application ID; (3) Application status changes – notification at each status transition; (4) Document rejection – notification with reason and re-upload instructions; (5) Loan approval – notification with approved loan details and EMI information; (6) Loan rejection – notification with reason; (7) EMI due date reminder – 7 days before and on the due date; (8) Overdue payment alert – 1, 7, and 15 days after the due date; (9) Successful EMI payment recording – payment confirmation. In-app notifications are displayed on the user's dashboard with a notification badge showing unread count. Email notifications are sent using a predefined template for each event type. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-017: Password Recovery}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-017 \\
+\textbf{Requirement Name} & Password Recovery \\
+\textbf{Description} & The system shall provide a mechanism for users to recover their forgotten passwords. \\
+\textbf{Actor} & Customer, Bank Employee \\
+\textbf{Priority} & Medium \\
+\textbf{Expected Behavior} & The user clicks on "Forgot Password" on the login page. The system prompts for the registered email address. Upon entering a valid registered email, the system generates a time-limited (15 minutes) password reset link and sends it to the email address. Clicking the link redirects the user to a password reset page where they enter and confirm a new password. The new password must meet the system's password complexity requirements. Upon successful reset, the user is redirected to the login page with a success message. The reset link becomes invalid after use or after the time limit expires. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{FR-018: Logout}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Requirement ID} & FR-018 \\
+\textbf{Requirement Name} & Logout \\
+\textbf{Description} & The system shall allow users to securely log out of the system. \\
+\textbf{Actor} & Customer, Bank Employee, Administrator \\
+\textbf{Priority} & High \\
+\textbf{Expected Behavior} & The user clicks the "Logout" button available on all pages of the application. The system invalidates the current session, clears session data, and redirects the user to the login page. A confirmation message "You have been successfully logged out" is displayed. After logout, any attempt to access a protected page using browser back navigation or direct URL entry is redirected to the login page. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Non-Functional Requirements}
+
+\textbf{Table 2.3: Non-Functional Requirements Summary}
+
+\subsection{Performance Requirements}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l}
+\toprule
+\textbf{NFR ID} & \textbf{Requirement} & \textbf{Specification} \\
+\midrule
+NFR-001 & Page Load Time & All web pages shall load within 3 seconds under normal operating conditions (up to 100 concurrent users). \\
+NFR-002 & Search Response Time & Search queries (customer search, application search) shall return results within 2 seconds. \\
+NFR-003 & Transaction Processing Time & Form submissions (registration, login, application submission) shall be processed within 5 seconds. \\
+NFR-004 & Report Generation Time & Standard reports shall be generated within 10 seconds. Complex reports with large datasets shall be generated within 30 seconds. \\
+NFR-005 & Concurrent Users & The system shall support a minimum of 200 concurrent users without performance degradation exceeding 20\%. \\
+NFR-006 & Database Query Performance & Database queries shall execute within 1 second for standard CRUD operations and within 5 seconds for complex analytical queries. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Security Requirements}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l}
+\toprule
+\textbf{NFR ID} & \textbf{Requirement} & \textbf{Specification} \\
+\midrule
+NFR-007 & Authentication & The system shall require username/email and password authentication for all user access. Passwords must be at least 8 characters long, containing at least one uppercase letter, one lowercase letter, one digit, and one special character. \\
+NFR-008 & Password Storage & All passwords shall be stored in hashed form using bcrypt or equivalent cryptographic hashing algorithm. Plaintext passwords shall never be stored or transmitted. \\
+NFR-009 & Session Management & User sessions shall expire after 30 minutes of inactivity. Session tokens shall be cryptographically random and transmitted over HTTPS. \\
+NFR-010 & Role-Based Access Control & The system shall enforce role-based access control (RBAC), ensuring that users can only access functionalities and data authorized for their role. \\
+NFR-011 & Data Encryption & All communication between client and server shall be encrypted using TLS 1.2 or higher (HTTPS). \\
+NFR-012 & Input Validation & All user inputs shall be validated on both client and server sides to prevent SQL injection, cross-site scripting (XSS), and other injection attacks. \\
+NFR-013 & Audit Logging & The system shall maintain an audit log of all significant user actions (login, logout, application submission, approval, rejection, data modifications) with timestamp and user identification. \\
+NFR-014 & Account Lockout & User accounts shall be temporarily locked for 30 minutes after 5 consecutive failed login attempts. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Reliability Requirements}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l}
+\toprule
+\textbf{NFR ID} & \textbf{Requirement} & \textbf{Specification} \\
+\midrule
+NFR-015 & System Uptime & The system shall maintain a minimum uptime of 99.5\% (excluding scheduled maintenance windows). \\
+NFR-016 & Data Integrity & The system shall ensure data integrity through database constraints, transaction management (ACID properties), and data validation at all entry points. \\
+NFR-017 & Error Handling & The system shall handle all errors gracefully, displaying user-friendly error messages without exposing internal system details, technical stack traces, or database structure. \\
+NFR-018 & Data Backup & The system shall support automated daily database backups with a retention period of at least 30 days. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Availability Requirements}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l}
+\toprule
+\textbf{NFR ID} & \textbf{Requirement} & \textbf{Specification} \\
+\midrule
+NFR-019 & Operational Hours & The system shall be available 24 hours a day, 7 days a week, with scheduled maintenance windows limited to off-peak hours (2:00 AM – 4:00 AM). \\
+NFR-020 & Scheduled Maintenance & Scheduled maintenance windows shall be announced to users at least 24 hours in advance. \\
+NFR-021 & Recovery Time Objective & In the event of a system failure, the system shall be restored to full operational status within 4 hours (Recovery Time Objective). \\
+NFR-022 & Recovery Point Objective & In the event of data loss, the system shall be able to recover data to within 24 hours of the failure (Recovery Point Objective based on daily backups). \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Usability Requirements}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l}
+\toprule
+\textbf{NFR ID} & \textbf{Requirement} & \textbf{Specification} \\
+\midrule
+NFR-023 & Intuitive Interface & The user interface shall be intuitive enough that a new customer can complete the registration and loan application process without external assistance. \\
+NFR-024 & Consistent Design & The user interface shall maintain a consistent look, feel, and navigation pattern across all pages and modules. \\
+NFR-025 & Error Feedback & The system shall provide clear, specific, and actionable error messages that guide users to correct invalid inputs. \\
+NFR-026 & Accessibility & The system shall be accessible through standard web browsers without requiring additional software installation. \\
+NFR-027 & Responsive Design & The user interface shall be responsive, rendering appropriately on screen resolutions from 1024x768 to 3840x2160 and on devices from tablets to large desktop monitors. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Maintainability Requirements}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l}
+\toprule
+\textbf{NFR ID} & \textbf{Requirement} & \textbf{Specification} \\
+\midrule
+NFR-028 & Modular Architecture & The system shall be designed with a modular architecture, enabling independent modification and enhancement of individual modules without impacting others. \\
+NFR-029 & Code Documentation & All source code shall be documented with inline comments and external documentation sufficient for a new developer to understand the system within 2 weeks. \\
+NFR-030 & Configuration Management & System configuration parameters (database connection strings, email server settings, file size limits) shall be externalized in configuration files, not hardcoded. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Scalability Requirements}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l}
+\toprule
+\textbf{NFR ID} & \textbf{Requirement} & \textbf{Specification} \\
+\midrule
+NFR-031 & Horizontal Scalability & The system architecture shall support horizontal scalability through the addition of application server instances behind a load balancer. \\
+NFR-032 & Data Volume & The system shall support a minimum of 100,000 customer records, 500,000 loan application records, and 5,000,000 repayment transaction records without significant performance degradation. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Portability Requirements}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l}
+\toprule
+\textbf{NFR ID} & \textbf{Requirement} & \textbf{Specification} \\
+\midrule
+NFR-033 & Platform Independence & The server-side application shall be deployable on both Windows Server and Linux server platforms. \\
+NFR-034 & Database Portability & The database design shall use standard SQL, enabling migration between supported RDBMS platforms (MySQL, PostgreSQL) with minimal modifications. \\
+NFR-035 & Browser Independence & The client-side interface shall function correctly on all major web browsers as specified in the operating environment (Section 2.2.4). \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{External Interface Requirements}
+
+\subsection{User Interface Requirements}
+
+\begin{enumerate}
+  \item The system shall provide a web-based graphical user interface (GUI) accessible through standard web browsers.
+  \item The login page shall provide fields for username/email and password, along with "Login," "Register," and "Forgot Password" options.
+  \item The customer dashboard shall display a summary of active loan applications, approved loans, upcoming EMI due dates, and recent notifications.
+  \item The employee dashboard shall display a list of assigned pending applications, applications requiring action, and summary metrics (applications processed, pending, approved, rejected).
+  \item The admin panel shall provide a navigation menu for accessing user management, loan category management, employee management, reporting, and system configuration modules.
+  \item All forms shall provide clear field labels, input validation feedback, mandatory field indicators (*), and help text where appropriate.
+  \item Tables and lists shall support sorting, filtering, and pagination for managing large datasets.
+  \item The system shall use a consistent color scheme, typography, and visual design language across all pages.
+\end{enumerate}
+
+\subsection{Hardware Interface Requirements}
+
+\begin{enumerate}
+  \item The system shall interface with the server hardware through the operating system and web server software; no direct hardware interfaces are required.
+  \item Client devices require standard input devices (keyboard, mouse/touchpad/touchscreen) and display output.
+  \item The server requires network interface cards for TCP/IP network connectivity.
+  \item Document upload requires client-side file system access through the browser's standard file selection dialog.
+\end{enumerate}
+
+\subsection{Software Interface Requirements}
+
+\begin{enumerate}
+  \item \textbf{Database Interface:} The application server communicates with the database server using JDBC (for Java-based implementation) or equivalent database connectivity APIs, executing SQL queries for data storage and retrieval.
+  \item \textbf{Web Server Interface:} The web server (Apache/Nginx) serves static content and proxies dynamic requests to the application server.
+  \item \textbf{Email Interface:} The application server communicates with an SMTP email server to send automated notification emails. The interface uses standard SMTP protocol with TLS encryption.
+  \item \textbf{File System Interface:} The application server interfaces with the server's file system for storing and retrieving uploaded documents. Documents are stored in a designated directory structure organized by application ID.
+  \item \textbf{Browser Interface:} The server communicates with client browsers using HTTP/HTTPS protocols, delivering HTML, CSS, and JavaScript content for rendering.
+\end{enumerate}
+
+\subsection{Communication Interface Requirements}
+
+\begin{enumerate}
+  \item \textbf{Client-Server Communication:} All communication between the client browser and the web server shall use HTTP/HTTPS protocol over TCP/IP.
+  \item \textbf{HTTPS Requirement:} All sensitive data transmissions (login credentials, personal information, financial data) shall be conducted over HTTPS (TLS 1.2+).
+  \item \textbf{Email Communication:} The system shall communicate with the SMTP server using port 587 (TLS) or 465 (SSL) for sending notification emails.
+  \item \textbf{Database Communication:} The application server shall communicate with the database server using the database-specific protocol (MySQL protocol on port 3306 or PostgreSQL protocol on port 5432) within the server's internal network.
+\end{enumerate}
+
+\section{System Constraints}
+
+\begin{enumerate}
+  \item The system is designed for the loan management process only and does not cover other banking operations such as savings accounts, fixed deposits, or fund transfers.
+  \item The system does not integrate with external payment gateways for actual fund disbursement or EMI collection; payment recording is a manual entry by bank employees.
+  \item The system does not perform real-time credit score checks through external agencies; credit score information is entered manually during the application process or by bank employees.
+  \item The maximum number of concurrent users is limited to 500 in the initial deployment.
+  \item The system supports only the English language for the user interface and communications.
+  \item Document storage is limited to the server's local file system; cloud storage integration is not included.
+  \item The system does not support digital signatures for document authentication.
+  \item Loan interest rate changes during the tenure are not automatically applied; they require manual administrative intervention.
+\end{enumerate}
+
+\section{Use Case Descriptions}
+
+\subsection{Use Case 1: Customer Registration}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Use Case ID} & UC-001 \\
+\textbf{Use Case Name} & Customer Registration \\
+\textbf{Primary Actor} & Customer \\
+\textbf{Preconditions} & The customer has access to the system's registration page. The customer does not already have an account. \\
+\textbf{Main Flow} & 1. The customer navigates to the registration page. 2. The system displays the registration form. 3. The customer fills in all required fields (name, DOB, gender, email, phone, address, Aadhaar, PAN, username, password). 4. The customer submits the form. 5. The system validates all inputs. 6. The system creates the customer account. 7. The system sends a confirmation email. 8. The system redirects to the login page with a success message. \\
+\textbf{Alternate Flow} & 5a. If validation fails (invalid format, duplicate email/username), the system displays error messages and returns to step 3 with entered data preserved. \\
+\textbf{Postconditions} & A new customer account is created in the database. A confirmation email is sent. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Use Case 2: Loan Application Submission}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Use Case ID} & UC-002 \\
+\textbf{Use Case Name} & Loan Application Submission \\
+\textbf{Primary Actor} & Customer \\
+\textbf{Preconditions} & The customer is logged in. At least one active loan category exists. \\
+\textbf{Main Flow} & 1. The customer selects "Apply for Loan" from the dashboard. 2. The system displays available loan categories. 3. The customer selects a loan category. 4. The system displays the loan application form for the selected category. 5. The customer fills in loan details and personal financial information. 6. The customer uploads required documents. 7. The customer reviews and submits the application. 8. The system validates inputs and documents. 9. The system generates an Application ID and sets status to "Submitted." 10. The system displays a confirmation with the Application ID. \\
+\textbf{Alternate Flow} & 8a. If validation fails, the system displays errors and returns to the form. 6a. If document upload fails (invalid format/size), the system displays an error and allows retry. \\
+\textbf{Postconditions} & A new loan application record is created. Documents are stored. Application status is "Submitted." \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Use Case 3: Loan Approval}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Use Case ID} & UC-003 \\
+\textbf{Use Case Name} & Loan Approval \\
+\textbf{Primary Actor} & Senior Loan Officer / Branch Manager \\
+\textbf{Preconditions} & The loan application has passed document verification and eligibility assessment. The application is assigned to the approving authority. \\
+\textbf{Main Flow} & 1. The employee views the list of applications pending approval. 2. The employee selects an application to review. 3. The system displays the application details, documents, eligibility report, and Loan Officer remarks. 4. The employee reviews all information. 5. The employee approves the application with remarks. 6. The system updates the status to "Approved." 7. The system generates the loan record, calculates EMI, and creates the repayment schedule. 8. The system sends an approval notification to the customer. \\
+\textbf{Alternate Flow} & 5a. The employee rejects the application with mandatory remarks. 6a. The system updates the status to "Rejected" and sends a rejection notification. 5b. The employee requests additional information, setting the status to "Pending Additional Information" and notifying the customer. \\
+\textbf{Postconditions} & The application status is updated to "Approved" or "Rejected." If approved, a loan record and repayment schedule are generated. The customer is notified. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Use Case 4: EMI Payment Recording}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Use Case ID} & UC-004 \\
+\textbf{Use Case Name} & EMI Payment Recording \\
+\textbf{Primary Actor} & Bank Employee (Loan Officer) \\
+\textbf{Preconditions} & An approved loan exists with an active repayment schedule. The customer has made an EMI payment. \\
+\textbf{Main Flow} & 1. The employee navigates to the repayment management section. 2. The employee searches for the loan by Loan ID or customer name. 3. The system displays the loan's repayment schedule with pending and overdue installments. 4. The employee selects the installment to be marked as paid. 5. The employee enters the payment date and payment amount. 6. The system validates the payment details. 7. The system records the payment, updates the installment status to "Paid," recalculates the outstanding balance, and logs the transaction. 8. The system sends a payment confirmation notification to the customer. \\
+\textbf{Alternate Flow} & 6a. If payment amount does not match the EMI amount, the system flags a discrepancy for manual review. \\
+\textbf{Postconditions} & The installment is marked as "Paid." The outstanding balance is updated. A payment record is created. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Use Case 5: Report Generation}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l}
+\toprule
+\textbf{Attribute} & \textbf{Details} \\
+\midrule
+\textbf{Use Case ID} & UC-005 \\
+\textbf{Use Case Name} & Report Generation \\
+\textbf{Primary Actor} & Administrator / Branch Manager \\
+\textbf{Preconditions} & The user is logged in with Administrator or Branch Manager role. \\
+\textbf{Main Flow} & 1. The user navigates to the Reports section. 2. The system displays available report types. 3. The user selects a report type. 4. The system presents filter options (date range, category, status, employee). 5. The user sets filters and generates the report. 6. The system queries the database, processes the data, and displays the report in tabular format with summary statistics. 7. The user can export the report if needed. \\
+\textbf{Alternate Flow} & 6a. If no data matches the filter criteria, the system displays a "No records found" message. \\
+\textbf{Postconditions} & The report is displayed to the user. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Data Requirements}
+
+The Bank Loan Management System requires the storage and management of the following data categories:
+
+\subsection{Customer Data}
+
+\begin{itemize}
+  \item Personal information: Full name, date of birth, gender, nationality
+  \item Contact information: Email address, phone number, residential address
+  \item Identity information: Aadhaar number, PAN number
+  \item Authentication data: Username, hashed password, account status
+  \item Registration metadata: Registration date, last login date
+\end{itemize}
+
+\subsection{Loan Application Data}
+
+\begin{itemize}
+  \item Application identification: Application ID, submission date
+  \item Applicant reference: Customer ID (foreign key)
+  \item Loan details: Loan category, requested amount, preferred tenure, purpose
+  \item Financial information: Monthly income, employment type, employer name, years of employment, existing liabilities
+  \item Application status: Current status, status history with timestamps
+  \item Processing information: Assigned employee, remarks, approval/rejection date
+\end{itemize}
+
+\subsection{Document Data}
+
+\begin{itemize}
+  \item Document identification: Document ID, application ID (foreign key)
+  \item Document details: Document type (Identity Proof, Address Proof, Income Proof, etc.), file name, file path, file size, file format
+  \item Verification data: Verification status, verified by (employee ID), verification date, verification remarks
+\end{itemize}
+
+\subsection{Bank Employee Data}
+
+\begin{itemize}
+  \item Personal information: Employee name, employee ID, email, phone
+  \item Professional information: Department, designation, role in system
+  \item Authentication data: Username, hashed password, account status
+  \item Performance data: Applications assigned, processed, approved, rejected
+\end{itemize}
+
+\subsection{Loan Data}
+
+\begin{itemize}
+  \item Loan identification: Loan ID, application ID (foreign key), customer ID (foreign key)
+  \item Loan details: Loan category, approved amount, interest rate, tenure (months), EMI amount
+  \item Loan status: Active, closed, defaulted
+  \item Dates: Approval date, disbursement date, expected closure date
+\end{itemize}
+
+\subsection{Repayment Data}
+
+\begin{itemize}
+  \item Repayment identification: Repayment ID, loan ID (foreign key)
+  \item Installment details: Installment number, due date, EMI amount, principal component, interest component
+  \item Payment details: Payment date, payment amount, payment status (Pending, Paid, Overdue)
+  \item Balance: Outstanding balance after each payment
+\end{itemize}
+
+\subsection{Data Retention}
+
+\begin{itemize}
+  \item Active customer and loan data shall be retained throughout the loan lifecycle and for a minimum of 7 years after loan closure.
+  \item Application data for rejected applications shall be retained for a minimum of 3 years.
+  \item Audit logs shall be retained for a minimum of 5 years.
+  \item System backups shall be retained for a minimum of 30 days.
+\end{itemize}
+
+\section{Acceptance Criteria}
+
+The Bank Loan Management System shall be considered acceptable when it meets the following criteria:
+
+\begin{enumerate}
+  \item \textbf{Functional Completeness:} All functional requirements (FR-001 through FR-018) are implemented and verified through testing.
+  \item \textbf{Data Integrity:} All CRUD operations maintain data consistency and referential integrity as defined in the database design.
+  \item \textbf{Security Compliance:} Authentication, authorization, session management, and data encryption functions operate as specified in the security requirements.
+  \item \textbf{Performance Standards:} The system meets all performance benchmarks specified in the non-functional requirements (page load time, search response time, concurrent user support).
+  \item \textbf{Usability Standards:} The user interface is intuitive, consistent, and provides appropriate feedback and error handling as specified in the usability requirements.
+  \item \textbf{Browser Compatibility:} The system functions correctly on all specified web browsers and screen resolutions.
+  \item \textbf{Test Case Pass Rate:} A minimum of 95\% of all defined test cases pass successfully.
+  \item \textbf{Documentation Completeness:} All system documentation (user manuals, technical documentation, administration guides) is complete and accurate.
+  \item \textbf{No Critical Defects:} Zero critical or high-severity defects remain unresolved at the time of acceptance.
+  \item \textbf{Stakeholder Sign-Off:} The project guide/faculty approves the system documentation and design as meeting the academic requirements.
+\end{enumerate}

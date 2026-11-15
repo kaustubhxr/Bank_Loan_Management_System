@@ -1,0 +1,31 @@
+flowchart TD
+    Start([Start]) --> Q1{"Login or Register?"}
+    Q1 -->|New User| A1["Register Account"]
+    Q1 -->|Existing User| A2["Login to System"]
+    A1 --> A2
+    A2 --> Q2{"Authenticated?"}
+    Q2 -->|No| A2
+    Q2 -->|Yes| A3["Access Dashboard"]
+    A3 --> A4["Enter Loan Details"]
+    A4 --> A5["Select Loan Category"]
+    A5 --> A6["Enter Loan Amount and Term"]
+    A6 --> A7["Submit Loan Application"]
+    A7 --> A8["Upload Required Documents"]
+    A8 --> A9["Verify Documents"]
+    A9 --> Q3{"Documents Valid?"}
+    Q3 -->|No| A10["Request Re-upload"]
+    A10 --> A8
+    Q3 -->|Yes| A11["Check Eligibility"]
+    A11 --> Q4{"Eligible?"}
+    Q4 -->|No| A12["Reject Application"]
+    Q4 -->|Yes| A13["Approve Loan"]
+    A13 --> A14["Notify Customer - Approved"]
+    A12 --> A15["Notify Customer - Rejected"]
+    A15 --> End1([End])
+    A14 --> A16["Disburse Loan Amount"]
+    A16 --> A17["Generate EMI Schedule"]
+    A17 --> A18["Process Repayment"]
+    A18 --> Q5{"All EMIs Paid?"}
+    Q5 -->|No| A18
+    Q5 -->|Yes| A19["Close Loan"]
+    A19 --> End2([End])

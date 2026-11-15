@@ -1,0 +1,51 @@
+flowchart LR
+    CustomerActor["fa:fa-user\nCustomer"]
+    EmployeeActor["fa:fa-user-tie\nBank Employee"]
+    AdminActor["fa:fa-user-shield\nAdministrator"]
+
+    subgraph SystemBoundary["Bank Loan Management System"]
+        UC1(["Register"])
+        UC2(["Login"])
+        UC3(["Authenticate"])
+        UC4(["Apply for Loan"])
+        UC5(["Select Category"])
+        UC6(["Upload Documents"])
+        UC7(["Track Application Status"])
+        UC8(["View Loan History"])
+        UC9(["View EMI Details"])
+        UC10(["Make Repayment"])
+        UC11(["View Applications"])
+        UC12(["Verify Documents"])
+        UC13(["Assess Eligibility"])
+        UC14(["Approve or Reject Loan"])
+        UC15(["Update Application Status"])
+        UC16(["Manage Users"])
+        UC17(["Manage Employees"])
+        UC18(["Manage Loan Categories"])
+        UC19(["Generate Reports"])
+    end
+
+    CustomerActor --> UC1
+    CustomerActor --> UC2
+    CustomerActor --> UC4
+    CustomerActor --> UC6
+    CustomerActor --> UC7
+    CustomerActor --> UC9
+    CustomerActor --> UC10
+
+    EmployeeActor --> UC2
+    EmployeeActor --> UC11
+    EmployeeActor --> UC12
+    EmployeeActor --> UC13
+    EmployeeActor --> UC14
+    EmployeeActor --> UC15
+
+    AdminActor --> UC2
+    AdminActor --> UC16
+    AdminActor --> UC17
+    AdminActor --> UC18
+    AdminActor --> UC19
+
+    UC2 -.->|"include"| UC3
+    UC4 -.->|"include"| UC5
+    UC7 -.->|"extend"| UC8

@@ -1,0 +1,52 @@
+classDiagram
+    class cust1_Customer["cust1 : Customer"] {
+        Customer_ID = C001
+        Name = "Rahul Sharma"
+        DOB = "1990-05-15"
+        Phone = "9876543210"
+        Email = "rahul.sharma@email.com"
+        Income = 750000
+    }
+
+    class app1_LoanApplication["app1 : LoanApplication"] {
+        Application_ID = LA001
+        Loan_Type = "Home Loan"
+        Amount = 2500000
+        Application_Date = "2024-01-10"
+        Status = "Approved"
+    }
+
+    class emp1_BankEmployee["emp1 : BankEmployee"] {
+        Employee_ID = E001
+        Name = "Priya Singh"
+        Designation = "Loan Officer"
+        Department = "Loan Processing"
+    }
+
+    class doc1_Document["doc1 : Document"] {
+        Document_ID = D001
+        Type = "Aadhaar Card"
+        Upload_Date = "2024-01-10"
+        Status = "Verified"
+    }
+
+    class loan1_Loan["loan1 : Loan"] {
+        Loan_ID = L001
+        Amount = 2500000
+        Interest_Rate = 8.5
+        Term = 20
+        Status = "Active"
+    }
+
+    class rep1_Repayment["rep1 : Repayment"] {
+        Repayment_ID = R001
+        EMI_Amount = 21000
+        Due_Date = "2024-02-10"
+        Status = "Paid"
+    }
+
+    cust1_Customer --> app1_LoanApplication : submitted
+    app1_LoanApplication --> doc1_Document : contains
+    emp1_BankEmployee --> app1_LoanApplication : processed
+    app1_LoanApplication --> loan1_Loan : resulted in
+    loan1_Loan --> rep1_Repayment : has

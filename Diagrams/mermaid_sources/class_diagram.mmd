@@ -1,0 +1,111 @@
+classDiagram
+    class User {
+        -int userId
+        -String username
+        -String password
+        -String email
+        -String role
+        +login() boolean
+        +logout() void
+        +updateProfile() void
+    }
+
+    class Customer {
+        -int customerId
+        -String name
+        -Date dob
+        -String address
+        -String phone
+        -double income
+        +register() boolean
+        +applyForLoan() LoanApplication
+        +uploadDocument() Document
+        +trackStatus() String
+        +makePayment() boolean
+    }
+
+    class BankEmployee {
+        -int employeeId
+        -String employeeName
+        -String designation
+        -String department
+        +viewApplications() List
+        +verifyDocuments() boolean
+        +assessEligibility() boolean
+        +approveRejectLoan() boolean
+    }
+
+    class Administrator {
+        -int adminId
+        +manageUsers() void
+        +manageCategories() void
+        +generateReports() Report
+    }
+
+    class LoanApplication {
+        -int applicationId
+        -String loanType
+        -double loanAmount
+        -Date applicationDate
+        -String status
+        +submit() boolean
+        +updateStatus() void
+        +getDetails() LoanApplication
+    }
+
+    class Document {
+        -int documentId
+        -String documentType
+        -Date uploadDate
+        -String verificationStatus
+        -String filePath
+        +upload() boolean
+        +verify() boolean
+        +getStatus() String
+    }
+
+    class Loan {
+        -int loanId
+        -double amount
+        -float interestRate
+        -int term
+        -Date approvalDate
+        -String status
+        +calculateEMI() double
+        +disburse() boolean
+        +close() void
+    }
+
+    class Repayment {
+        -int repaymentId
+        -double emiAmount
+        -Date dueDate
+        -Date paymentDate
+        -String status
+        -double penalty
+        +processPayment() boolean
+        +calculatePenalty() double
+        +getSchedule() List
+    }
+
+    class LoanCategory {
+        -int categoryId
+        -String categoryName
+        -double maxAmount
+        -double minAmount
+        -float interestRate
+        -int maxTerm
+        +getCategories() List
+        +addCategory() boolean
+    }
+
+    User <|-- Customer
+    User <|-- BankEmployee
+    User <|-- Administrator
+
+    Customer "1" --> "0..*" LoanApplication : submits
+    LoanApplication "1" --> "1..*" Document : contains
+    BankEmployee "1" --> "0..*" LoanApplication : processes
+    LoanApplication "1" --> "0..1" Loan : results in
+    Loan "1" --> "0..*" Repayment : has
+    LoanApplication "1" --> "1" LoanCategory : belongs to

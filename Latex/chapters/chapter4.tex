@@ -1,0 +1,397 @@
+\chapter{Database Design}
+
+\section{Database Architecture Overview}
+
+The database design for the \textbf{Bank Loan Management System} represents the logical and physical data blueprint required to support high-integrity financial transactions, multi-role user access, and strict regulatory compliance. The underlying database engine selected is a relational database management system (RDBMS) configured to enforce the ACID (Atomicity, Consistency, Isolation, Durability) transactional properties essential for monetary accounting.
+
+The architectural design follows a relational schema structured in Boyce-Codd Normal Form (BCNF) / Third Normal Form (3NF) to eliminate update, insertion, and deletion anomalies. Data security is maintained through transparent data encryption (TDE) for sensitive fields (e.g., government identity numbers, hashed passwords), foreign key referential integrity constraints, and domain-level validation rules.
+
+\section{Entity Descriptions}
+
+The persistent data architecture is centered on six core logical entities:
+
+\begin{enumerate}
+  \item \textbf{CUSTOMER:} Maintains demographic, contact, financial, and authentication records for registered loan applicants.
+  \item \textbf{LOAN\_APPLICATION:} Captures the attributes of individual loan proposals submitted by customers, tracking the application through its verification lifecycle.
+  \item \textbf{BANK\_EMPLOYEE:} Stores staff credentials, administrative designations, and departmental assignments for internal banking personnel.
+  \item \textbf{DOCUMENT:} Stores metadata, physical file storage pointers, and verification statuses for submitted proof attachments (KYC, income slips, collateral titles).
+  \item \textbf{LOAN:} Represents formally approved, sanctioned, and disbursed credit facilities with active repayment schedules.
+  \item \textbf{REPAYMENT:} Logs periodic installment amortization obligations, recording payment execution timestamps, amounts, and settlement statuses.
+\end{enumerate}
+
+\section{Relational Schema and Integrity Constraints}
+
+The relational schema translates the conceptual entity-relationship model into relational tables with explicit key definitions:
+
+\begin{lstlisting}
+CUSTOMER (
+    Customer_ID [PK], Full_Name, DOB, Gender, Address, Phone_Number, 
+    Email, Monthly_Income, Pan_Number, Aadhaar_Number, Password_Hash, 
+    Registration_Date, Account_Status
+)
+
+LOAN_APPLICATION (
+    Application_ID [PK], Customer_ID [FK], Loan_Type, Requested_Amount, 
+    Tenure_Months, Submission_Date, Application_Status, Credit_Score, 
+    Employee_ID [FK], Approval_Date, Remarks
+)
+
+BANK_EMPLOYEE (
+    Employee_ID [PK], Full_Name, Designation, Department, 
+    Email, Phone_Number, Password_Hash, Access_Role, Date_Of_Joining
+)
+
+DOCUMENT (
+    Document_ID [PK], Application_ID [FK], Document_Type, File_Name, 
+    File_Path, File_Size_KB, Upload_Timestamp, Verification_Status, 
+    Verified_By [FK], Verification_Date, Verification_Remarks
+)
+
+LOAN (
+    Loan_ID [PK], Application_ID [FK], Customer_ID [FK], Sanctioned_Amount, 
+    Interest_Rate, Tenure_Months, Monthly_EMI, Disbursement_Date, 
+    Outstanding_Balance, Loan_Status, Closure_Date
+)
+
+REPAYMENT (
+    Repayment_ID [PK], Loan_ID [FK], Installment_Number, Due_Date, 
+    EMI_Amount, Principal_Component, Interest_Component, Payment_Date, 
+    Amount_Paid, Late_Penalty, Payment_Status, Transaction_Reference
+)
+\end{lstlisting}
+
+\subsection{Relational Integrity Constraints}
+
+\begin{itemize}
+  \item \textbf{Entity Integrity:} Every primary key (\texttt{Customer\_ID}, \texttt{Application\_ID}, \texttt{Employee\_ID}, \texttt{Document\_ID}, \texttt{Loan\_ID}, \texttt{Repayment\_ID}) is non-null and uniquely indexed.
+  \item \textbf{Referential Integrity:}
+  \item \texttt{LOAN\_APPLICATION.Customer\_ID} references \texttt{CUSTOMER.Customer\_ID} on delete restrict.
+  \item \texttt{LOAN\_APPLICATION.Employee\_ID} references \texttt{BANK\_EMPLOYEE.Employee\_ID} on delete set null.
+  \item \texttt{DOCUMENT.Application\_ID} references \texttt{LOAN\_APPLICATION.Application\_ID} on delete cascade.
+  \item \texttt{DOCUMENT.Verified\_By} references \texttt{BANK\_EMPLOYEE.Employee\_ID} on delete set null.
+  \item \texttt{LOAN.Application\_ID} references \texttt{LOAN\_APPLICATION.Application\_ID} on delete restrict.
+  \item \texttt{LOAN.Customer\_ID} references \texttt{CUSTOMER.Customer\_ID} on delete restrict.
+  \item \texttt{REPAYMENT.Loan\_ID} references \texttt{LOAN.Loan\_ID} on delete cascade.
+  \item \textbf{Domain Integrity:} Enforces range validation (e.g., \texttt{Monthly\_Income > 0}, \texttt{Requested\_Amount >= 10000}, \texttt{Tenure\_Months BETWEEN 6 AND 360}, \texttt{Interest\_Rate BETWEEN 5.0 AND 25.0}).
+\end{itemize}
+
+\section{Data Dictionary}
+
+The data dictionary provides the exhaustive technical specification of all relational tables, column data types, storage allocations, integrity constraints, and operational descriptions.
+
+\subsection{Table 4.1: Data Dictionary - CUSTOMER Table}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{Column Name} & \textbf{Data Type} & \textbf{Size} & \textbf{Nullable} & \textbf{Key / Constraint} & \textbf{Description} \\
+\midrule
+\texttt{Customer\_ID} & VARCHAR & 20 & NO & PK & Unique identifier for customer (e.g., 'CUST-10001') \\
+\texttt{Full\_Name} & VARCHAR & 100 & NO & None & Legal name of the applicant \\
+\texttt{DOB} & DATE & - & NO & Check (Age >= 18) & Date of birth of applicant \\
+\texttt{Gender} & VARCHAR & 10 & NO & Check ('Male','Female','Other') & Gender of applicant \\
+\texttt{Address} & VARCHAR & 255 & NO & None & Complete residential postal address \\
+\texttt{Phone\_Number} & VARCHAR & 15 & NO & UNIQUE & 10-digit mobile number with country prefix \\
+\texttt{Email} & VARCHAR & 100 & NO & UNIQUE & Valid electronic mail address \\
+\texttt{Monthly\_Income} & DECIMAL & 12,2 & NO & Check (> 0) & Verified gross monthly earnings in INR \\
+\texttt{Pan\_Number} & VARCHAR & 10 & NO & UNIQUE & 10-character Permanent Account Number \\
+\texttt{Aadhaar\_Number} & VARCHAR & 12 & NO & UNIQUE & 12-digit national biometric identity number \\
+\texttt{Password\_Hash} & VARCHAR & 255 & NO & None & PBKDF2/BCrypt cryptographic password digest \\
+\texttt{Registration\_Date} & DATETIME & - & NO & DEFAULT CURRENT\_TIMESTAMP & Registration record creation timestamp \\
+\texttt{Account\_Status} & VARCHAR & 15 & NO & DEFAULT 'Active' & Status: 'Active', 'Suspended', 'Deactivated' \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.2: Data Dictionary - LOAN\_APPLICATION Table}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{Column Name} & \textbf{Data Type} & \textbf{Size} & \textbf{Nullable} & \textbf{Key / Constraint} & \textbf{Description} \\
+\midrule
+\texttt{Application\_ID} & VARCHAR & 20 & NO & PK & Unique proposal reference (e.g., 'APP-2026-001') \\
+\texttt{Customer\_ID} & VARCHAR & 20 & NO & FK (CUSTOMER) & Reference to applying customer \\
+\texttt{Loan\_Type} & VARCHAR & 30 & NO & Check ('Home','Personal','Auto','Edu') & Selected credit category \\
+\texttt{Requested\_Amount} & DECIMAL & 14,2 & NO & Check (>= 10000) & Requested principal loan balance \\
+\texttt{Tenure\_Months} & INT & - & NO & Check (6 to 360) & Proposed repayment duration in months \\
+\texttt{Submission\_Date} & DATETIME & - & NO & DEFAULT CURRENT\_TIMESTAMP & Application submission timestamp \\
+\texttt{Application\_Status} & VARCHAR & 25 & NO & DEFAULT 'Submitted' & 'Draft','Submitted','Under\_Review','Approved','Rejected' \\
+\texttt{Credit\_Score} & INT & - & YES & Check (300 to 900) & Assessed bureau credit rating \\
+\texttt{Employee\_ID} & VARCHAR & 20 & YES & FK (BANK\_EMPLOYEE) & Assigned reviewing loan officer \\
+\texttt{Approval\_Date} & DATETIME & - & YES & None & Timestamp of formal sanction or rejection \\
+\texttt{Remarks} & VARCHAR & 500 & YES & None & Underwriter observations and audit notes \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.3: Data Dictionary - BANK\_EMPLOYEE Table}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{Column Name} & \textbf{Data Type} & \textbf{Size} & \textbf{Nullable} & \textbf{Key / Constraint} & \textbf{Description} \\
+\midrule
+\texttt{Employee\_ID} & VARCHAR & 20 & NO & PK & Unique employee code (e.g., 'EMP-5001') \\
+\texttt{Full\_Name} & VARCHAR & 100 & NO & None & Legal name of bank employee \\
+\texttt{Designation} & VARCHAR & 50 & NO & None & Job title ('Loan Officer','Senior Underwriter') \\
+\texttt{Department} & VARCHAR & 50 & NO & DEFAULT 'Retail Credit' & Organizational department \\
+\texttt{Email} & VARCHAR & 100 & NO & UNIQUE & Corporate email address \\
+\texttt{Phone\_Number} & VARCHAR & 15 & NO & UNIQUE & Contact telephone number \\
+\texttt{Password\_Hash} & VARCHAR & 255 & NO & None & Secure salted password hash \\
+\texttt{Access\_Role} & VARCHAR & 20 & NO & Check ('Officer','Admin','Manager') & Authorization tier for RBAC enforcement \\
+\texttt{Date\_Of\_Joining} & DATE & - & NO & None & Official date of employment \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.4: Data Dictionary - DOCUMENT Table}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{Column Name} & \textbf{Data Type} & \textbf{Size} & \textbf{Nullable} & \textbf{Key / Constraint} & \textbf{Description} \\
+\midrule
+\texttt{Document\_ID} & VARCHAR & 20 & NO & PK & Unique document identifier (e.g., 'DOC-8001') \\
+\texttt{Application\_ID} & VARCHAR & 20 & NO & FK (LOAN\_APPLICATION) & Reference to parent loan application \\
+\texttt{Document\_Type} & VARCHAR & 50 & NO & None & Type ('Aadhaar','PAN','Salary\_Slip','ITR','Deed') \\
+\texttt{File\_Name} & VARCHAR & 150 & NO & None & Original upload filename \\
+\texttt{File\_Path} & VARCHAR & 255 & NO & None & Encrypted URI on secure document server \\
+\texttt{File\_Size\_KB} & INT & - & NO & Check (> 0 AND <= 10240) & File storage size in kilobytes \\
+\texttt{Upload\_Timestamp} & DATETIME & - & NO & DEFAULT CURRENT\_TIMESTAMP & Server receipt timestamp \\
+\texttt{Verification\_Status} & VARCHAR & 20 & NO & DEFAULT 'Pending' & 'Pending','Verified','Rejected','Reupload\_Requested' \\
+\texttt{Verified\_By} & VARCHAR & 20 & YES & FK (BANK\_EMPLOYEE) & Reviewing officer identifier \\
+\texttt{Verification\_Date} & DATETIME & - & YES & None & Completion timestamp of verification \\
+\texttt{Verification\_Remarks} & VARCHAR & 255 & YES & None & Inspector comments regarding legibility/validity \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.5: Data Dictionary - LOAN Table}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{Column Name} & \textbf{Data Type} & \textbf{Size} & \textbf{Nullable} & \textbf{Key / Constraint} & \textbf{Description} \\
+\midrule
+\texttt{Loan\_ID} & VARCHAR & 20 & NO & PK & Unique disbursed loan account (e.g., 'LN-9001') \\
+\texttt{Application\_ID} & VARCHAR & 20 & NO & FK (LOAN\_APPLICATION), UNIQUE & Underlying approved proposal \\
+\texttt{Customer\_ID} & VARCHAR & 20 & NO & FK (CUSTOMER) & Disbursed loan holder \\
+\texttt{Sanctioned\_Amount} & DECIMAL & 14,2 & NO & Check (> 0) & Approved and disbursed principal in INR \\
+\texttt{Interest\_Rate} & DECIMAL & 5,2 & NO & Check (> 0) & Annual percentage interest rate (APR) \\
+\texttt{Tenure\_Months} & INT & - & NO & Check (> 0) & Total amortized repayment period \\
+\texttt{Monthly\_EMI} & DECIMAL & 12,2 & NO & Check (> 0) & Computed fixed monthly installment \\
+\texttt{Disbursement\_Date} & DATETIME & - & NO & DEFAULT CURRENT\_TIMESTAMP & Funds transfer execution timestamp \\
+\texttt{Outstanding\_Balance} & DECIMAL & 14,2 & NO & Check (>= 0) & Remaining unpaid principal balance \\
+\texttt{Loan\_Status} & VARCHAR & 20 & NO & DEFAULT 'Active' & 'Active','Delinquent','Closed','Defaulted' \\
+\texttt{Closure\_Date} & DATETIME & - & YES & None & Date of complete loan liability liquidation \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.6: Data Dictionary - REPAYMENT Table}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{Column Name} & \textbf{Data Type} & \textbf{Size} & \textbf{Nullable} & \textbf{Key / Constraint} & \textbf{Description} \\
+\midrule
+\texttt{Repayment\_ID} & VARCHAR & 20 & NO & PK & Unique transaction record (e.g., 'REP-1001') \\
+\texttt{Loan\_ID} & VARCHAR & 20 & NO & FK (LOAN) & Parent loan account \\
+\texttt{Installment\_Number} & INT & - & NO & Check (> 0) & Sequence number of installment (1, 2, ... N) \\
+\texttt{Due\_Date} & DATE & - & NO & None & Scheduled calendar date for payment \\
+\texttt{EMI\_Amount} & DECIMAL & 12,2 & NO & Check (> 0) & Scheduled installment billing amount \\
+\texttt{Principal\_Component} & DECIMAL & 12,2 & NO & Check (>= 0) & Portioned allocation toward principal balance \\
+\texttt{Interest\_Component} & DECIMAL & 12,2 & NO & Check (>= 0) & Portioned allocation toward accrued interest \\
+\texttt{Payment\_Date} & DATETIME & - & YES & None & Actual timestamp when remittance occurred \\
+\texttt{Amount\_Paid} & DECIMAL & 12,2 & YES & Check (>= 0) & Actual quantum of funds remitted \\
+\texttt{Late\_Penalty} & DECIMAL & 10,2 & NO & DEFAULT 0.00 & Penalty surcharge levied for delayed payment \\
+\texttt{Payment\_Status} & VARCHAR & 20 & NO & DEFAULT 'Pending' & 'Pending','Paid','Overdue','Partially\_Paid' \\
+\texttt{Transaction\_Reference} & VARCHAR & 50 & YES & UNIQUE & Bank UTR / payment gateway confirmation token \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Relationships between Tables}
+
+The relational model implements five fundamental cardinality structures:
+
+\begin{enumerate}
+  \item \textbf{CUSTOMER (1) to LOAN\_APPLICATION (M):} A single registered customer can initiate zero, one, or multiple loan applications over their banking lifetime. Each loan application record references exactly one originating customer (\texttt{LOAN\_APPLICATION.Customer\_ID = CUSTOMER.Customer\_ID}).
+  \item \textbf{LOAN\_APPLICATION (1) to DOCUMENT (M):} A loan application necessitates multiple supporting verification attachments (KYC, proof of income, collateral title). Each uploaded document belongs strictly to one application (\texttt{DOCUMENT.Application\_ID = LOAN\_APPLICATION.Application\_ID}).
+  \item \textbf{BANK\_EMPLOYEE (1) to LOAN\_APPLICATION (M):} A credit officer reviews multiple loan proposals assigned to their underwriting queue. Each proposal references the assigned reviewing officer (\texttt{LOAN\_APPLICATION.Employee\_ID = BANK\_EMPLOYEE.Employee\_ID}).
+  \item \textbf{LOAN\_APPLICATION (1) to LOAN (0..1):} A loan application produces at most one disbursed loan upon formal credit approval. Applications that are rejected or pending produce zero loan accounts (\texttt{LOAN.Application\_ID = LOAN\_APPLICATION.Application\_ID}).
+  \item \textbf{LOAN (1) to REPAYMENT (M):} An active loan generates a multi-year repayment schedule comprising dozens or hundreds of scheduled monthly installments. Each repayment record maps to exactly one parent loan account (\texttt{REPAYMENT.Loan\_ID = LOAN.Loan\_ID}).
+\end{enumerate}
+
+\section{Database Normalization}
+
+Normalization is the systematic formal technique used in relational database design to organize table structures, minimize data redundancy, and eliminate update, insertion, and deletion anomalies. The database of the Bank Loan Management System has been evaluated through First, Second, and Third Normal Forms.
+
+\subsection{First Normal Form (1NF)}
+
+A relation is in First Normal Form if and only if all underlying attribute domains contain only atomic (indivisible) values, and there are no repeating groups or multi-valued columns.
+
+\begin{itemize}
+  \item \textbf{Evaluation \& Resolution:} In traditional paper loan ledgers, a single application record often recorded multiple uploaded documents (e.g., \texttt{Documents = {Aadhaar, PAN, SalarySlip}}) or multiple repayment dates in comma-delimited fields. In our design, all repeating groups are segregated into dedicated relational entities (\texttt{DOCUMENT} and \texttt{REPAYMENT}). Every attribute (e.g., \texttt{Full\_Name}, \texttt{Requested\_Amount}, \texttt{Due\_Date}) holds strictly scalar, atomic values. Primary keys are explicitly defined for every table. Hence, the schema satisfies \textbf{1NF}.
+\end{itemize}
+
+\subsection{Second Normal Form (2NF)}
+
+A relation is in Second Normal Form if it is in 1NF and every non-prime attribute is fully functionally dependent on the entire primary key (i.e., there are no partial dependencies on composite primary keys).
+
+\begin{itemize}
+  \item \textbf{Evaluation \& Resolution:} In our schema design, all entity tables utilize single-column surrogate primary keys (\texttt{Customer\_ID}, \texttt{Application\_ID}, \texttt{Employee\_ID}, \texttt{Document\_ID}, \texttt{Loan\_ID}, \texttt{Repayment\_ID}). By definition, partial functional dependency can only occur when a relation possesses a composite primary key. Since every table relies on a single-column primary key, every non-prime attribute depends functionally on the whole key. Hence, the schema unconditionally satisfies \textbf{2NF}.
+\end{itemize}
+
+\subsection{Third Normal Form (3NF)}
+
+A relation is in Third Normal Form if it is in 2NF and no non-prime attribute is transitively dependent on the primary key (i.e., for every functional dependency $X
+
+ightarrow Y\_\_INLINE\_MATH\_0\_\_X\_\_INLINE\_MATH\_1\_\_Y$ is a prime attribute).
+
+\begin{itemize}
+  \item \textbf{Evaluation \& Resolution:} In an un-normalized design, \texttt{LOAN\_APPLICATION} might store \texttt{Customer\_Name}, \texttt{Customer\_Email}, and \texttt{Customer\_Phone} alongside \texttt{Application\_ID}. In that configuration, \texttt{Application\_ID} $
+\end{itemize}
+
+ightarrow\_\_INLINE\_MATH\_0\_\_
+
+ightarrow\_\_INLINE\_MATH\_0\_\_
+
+ightarrow$ \texttt{Customer\_Phone}), which causes update anomalies (if a customer updates their phone number, multiple application records would become inconsistent).
+
+\begin{itemize}
+  \item In our normalized schema, all borrower demographic attributes reside exclusively in the \texttt{CUSTOMER} table. The \texttt{LOAN\_APPLICATION} table retains solely the foreign key reference \texttt{Customer\_ID}. Similarly, interest rates and category constraints are decoupled from applications and governed by category keys. Consequently, no transitive functional dependencies exist among non-prime attributes, establishing that the schema strictly satisfies \textbf{3NF}.
+\end{itemize}
+
+\section{Sample Data Records}
+
+\subsection{Table 4.7: Sample Records - CUSTOMER}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l l l}
+\toprule
+\textbf{Customer\_ID} & \textbf{Full\_Name} & \textbf{DOB} & \textbf{Gender} & \textbf{Phone\_Number} & \textbf{Email} & \textbf{Monthly\_Income} & \textbf{Pan\_Number} \\
+\midrule
+\texttt{CUST-10001} & Rahul Sharma & 1988-04-12 & Male & +919876543210 & rahul.sharma@example.com & 85000.00 & ABCDE1234F \\
+\texttt{CUST-10002} & Ananya Verma & 1992-09-24 & Female & +919812345678 & ananya.verma@example.com & 115000.00 & FGHIJ5678K \\
+\texttt{CUST-10003} & Vikram Patel & 1985-11-05 & Male & +919723456789 & vikram.patel@example.com & 62000.00 & KLMNO9012P \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.8: Sample Records - BANK\_EMPLOYEE}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l}
+\toprule
+\textbf{Employee\_ID} & \textbf{Full\_Name} & \textbf{Designation} & \textbf{Department} & \textbf{Email} & \textbf{Access\_Role} \\
+\midrule
+\texttt{EMP-5001} & Priya Singh & Senior Underwriter & Retail Credit & priya.singh@maitbank.ac.in & Officer \\
+\texttt{EMP-5002} & Rajesh Khanna & Credit Risk Manager & Risk Management & rajesh.khanna@maitbank.ac.in & Manager \\
+\texttt{EMP-5003} & Amit Roy & System Administrator & IT Infrastructure & amit.roy@maitbank.ac.in & Admin \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.9: Sample Records - LOAN\_APPLICATION}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l l l l}
+\toprule
+\textbf{Application\_ID} & \textbf{Customer\_ID} & \textbf{Loan\_Type} & \textbf{Requested\_Amount} & \textbf{Tenure\_Months} & \textbf{Submission\_Date} & \textbf{Application\_Status} & \textbf{Credit\_Score} & \textbf{Employee\_ID} \\
+\midrule
+\texttt{APP-2026-001} & \texttt{CUST-10001} & Home Loan & 3500000.00 & 240 & 2026-01-10 10:15:00 & Approved & 785 & \texttt{EMP-5001} \\
+\texttt{APP-2026-002} & \texttt{CUST-10002} & Personal Loan & 400000.00 & 36 & 2026-01-12 14:30:00 & Under\_Review & 720 & \texttt{EMP-5001} \\
+\texttt{APP-2026-003} & \texttt{CUST-10003} & Auto Loan & 800000.00 & 60 & 2026-01-15 11:45:00 & Rejected & 540 & \texttt{EMP-5002} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.10: Sample Records - DOCUMENT}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l l}
+\toprule
+\textbf{Document\_ID} & \textbf{Application\_ID} & \textbf{Document\_Type} & \textbf{File\_Name} & \textbf{File\_Size\_KB} & \textbf{Verification\_Status} & \textbf{Verified\_By} \\
+\midrule
+\texttt{DOC-8001} & \texttt{APP-2026-001} & Aadhaar Card & aadhaar\_rahul.pdf & 1240 & Verified & \texttt{EMP-5001} \\
+\texttt{DOC-8002} & \texttt{APP-2026-001} & Salary Slip & salary\_slip\_q4.pdf & 850 & Verified & \texttt{EMP-5001} \\
+\texttt{DOC-8003} & \texttt{APP-2026-003} & Bank Statement & bank\_stmt\_6m.pdf & 3400 & Rejected & \texttt{EMP-5002} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.11: Sample Records - LOAN}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l l l}
+\toprule
+\textbf{Loan\_ID} & \textbf{Application\_ID} & \textbf{Customer\_ID} & \textbf{Sanctioned\_Amount} & \textbf{Interest\_Rate} & \textbf{Monthly\_EMI} & \textbf{Outstanding\_Balance} & \textbf{Loan\_Status} \\
+\midrule
+\texttt{LN-9001} & \texttt{APP-2026-001} & \texttt{CUST-10001} & 3500000.00 & 8.50 & 30375.00 & 3469625.00 & Active \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Table 4.12: Sample Records - REPAYMENT}
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l l l l}
+\toprule
+\textbf{Repayment\_ID} & \textbf{Loan\_ID} & \textbf{Installment\_Number} & \textbf{Due\_Date} & \textbf{EMI\_Amount} & \textbf{Principal\_Component} & \textbf{Interest\_Component} & \textbf{Payment\_Status} \\
+\midrule
+\texttt{REP-1001} & \texttt{LN-9001} & 1 & 2026-02-10 & 30375.00 & 5583.33 & 24791.67 & Paid \\
+\texttt{REP-1002} & \texttt{LN-9001} & 2 & 2026-03-10 & 30375.00 & 5622.88 & 24752.12 & Pending \\
+\texttt{REP-1003} & \texttt{LN-9001} & 3 & 2026-04-10 & 30375.00 & 5662.71 & 24712.29 & Pending \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

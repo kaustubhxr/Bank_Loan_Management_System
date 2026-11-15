@@ -1,0 +1,66 @@
+erDiagram
+    CUSTOMER {
+        int Customer_ID PK
+        string Name
+        date DOB
+        string Address
+        string Phone_Number
+        string Email
+        decimal Income
+        string Password
+    }
+
+    LOAN_APPLICATION {
+        int Application_ID PK
+        int Customer_ID FK
+        string Loan_Type
+        decimal Loan_Amount
+        date Application_Date
+        string Application_Status
+        int Employee_ID FK
+    }
+
+    BANK_EMPLOYEE {
+        int Employee_ID PK
+        string Employee_Name
+        string Designation
+        string Email
+        string Phone_Number
+        string Department
+    }
+
+    DOCUMENT {
+        int Document_ID PK
+        int Application_ID FK
+        string Document_Type
+        date Upload_Date
+        string Verification_Status
+        string File_Path
+    }
+
+    LOAN {
+        int Loan_ID PK
+        int Application_ID FK
+        decimal Loan_Amount
+        float Interest_Rate
+        int Loan_Term
+        date Approval_Date
+        date Disbursement_Date
+        string Loan_Status
+    }
+
+    REPAYMENT {
+        int Repayment_ID PK
+        int Loan_ID FK
+        decimal EMI_Amount
+        date Due_Date
+        date Payment_Date
+        string Payment_Status
+        decimal Penalty_Amount
+    }
+
+    CUSTOMER ||--o{ LOAN_APPLICATION : "submits"
+    LOAN_APPLICATION ||--o{ DOCUMENT : "requires"
+    BANK_EMPLOYEE ||--o{ LOAN_APPLICATION : "processes"
+    LOAN_APPLICATION ||--o| LOAN : "results in"
+    LOAN ||--o{ REPAYMENT : "has"

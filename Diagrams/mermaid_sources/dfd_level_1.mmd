@@ -1,0 +1,51 @@
+flowchart TD
+    Customer["Customer"]
+    Employee["Bank Employee"]
+    Admin["Administrator"]
+
+    P1(["1.0\nUser Registration\nand Login"])
+    P2(["2.0\nLoan Application\nProcessing"])
+    P3(["3.0\nDocument\nVerification"])
+    P4(["4.0\nLoan Approval\nand Rejection"])
+    P5(["5.0\nEMI and Repayment\nManagement"])
+    P6(["6.0\nAdmin and Report\nManagement"])
+
+    D1[("D1: Customer Database")]
+    D2[("D2: Loan Application Database")]
+    D3[("D3: Document Database")]
+    D4[("D4: Loan Database")]
+    D5[("D5: Repayment Database")]
+
+    Customer -->|"Registration Details"| P1
+    P1 -->|"Login Credentials"| Customer
+    P1 -->|"Customer Record"| D1
+
+    Customer -->|"Loan Details"| P2
+    D1 -->|"Customer Info"| P2
+    P2 -->|"Application Data"| D2
+    P2 -->|"Application ID"| Customer
+
+    Customer -->|"Documents"| P3
+    D2 -->|"Application Details"| P3
+    P3 -->|"Document Record"| D3
+    P3 -->|"Verification Status"| Employee
+    Employee -->|"Verification Result"| P3
+
+    D2 -->|"Application for Review"| P4
+    D3 -->|"Verified Documents"| P4
+    Employee -->|"Approval Decision"| P4
+    P4 -->|"Decision Notification"| Customer
+    P4 -->|"Approved Loan"| D4
+
+    D4 -->|"Loan Details"| P5
+    P5 -->|"EMI Schedule"| Customer
+    Customer -->|"Payment"| P5
+    P5 -->|"Repayment Record"| D5
+    P5 -->|"Payment Confirmation"| Customer
+
+    Admin -->|"Management Commands"| P6
+    D1 -->|"User Records"| P6
+    D2 -->|"Application Records"| P6
+    D4 -->|"Loan Records"| P6
+    D5 -->|"Repayment Records"| P6
+    P6 -->|"Reports"| Admin

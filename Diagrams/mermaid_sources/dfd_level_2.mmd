@@ -1,0 +1,28 @@
+flowchart TD
+    Customer["Customer"]
+    D1[("D1: Customer Database")]
+    D2[("D2: Loan Application Database")]
+    D6[("D6: Loan Category Database")]
+
+    P21(["2.1\nSelect Loan\nCategory"])
+    P22(["2.2\nEnter Loan\nDetails"])
+    P23(["2.3\nCalculate Preliminary\nEligibility"])
+    P24(["2.4\nSubmit\nApplication"])
+    P25(["2.5\nGenerate\nApplication ID"])
+
+    Customer -->|"Category Selection"| P21
+    D6 -->|"Available Categories"| P21
+    P21 -->|"Selected Category"| P22
+
+    Customer -->|"Loan Amount, Term, Purpose"| P22
+    P22 -->|"Loan Details"| P23
+
+    D1 -->|"Customer Income and History"| P23
+    P23 -->|"Eligibility Result"| P24
+    P23 -->|"Preliminary Status"| Customer
+
+    P24 -->|"Complete Application"| P25
+    Customer -->|"Confirm Submission"| P24
+
+    P25 -->|"Application Record"| D2
+    P25 -->|"Application ID"| Customer

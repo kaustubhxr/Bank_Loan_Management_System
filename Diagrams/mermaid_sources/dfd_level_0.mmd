@@ -1,0 +1,15 @@
+flowchart LR
+    Customer["fa:fa-user Customer"]
+    Employee["fa:fa-user-tie Bank Employee"]
+    Admin["fa:fa-user-shield Administrator"]
+
+    System(["0.0\nBank Loan\nManagement System"])
+
+    Customer -->|"Loan Application\nDocuments\nRepayment"| System
+    System -->|"Application Status\nEMI Schedule\nNotifications"| Customer
+
+    Employee -->|"Verification Results\nApproval/Rejection"| System
+    System -->|"Pending Applications\nDocument Details\nCustomer Info"| Employee
+
+    Admin -->|"System Configuration\nUser Management\nCategory Updates"| System
+    System -->|"Reports\nSystem Logs\nUser Records"| Admin
